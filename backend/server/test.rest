@@ -65,3 +65,15 @@ Content-Type: application/json
 ###
 GET http://localhost:8081/station/getAll
 Content-Type: application/json
+
+###
+PUT http://localhost:8081/station/stationUpdateStationById
+Content-Type: application/json
+
+{
+  "id": "67d45d37042cb3256fdda42a",
+  "stationName": "SALEM",
+  "city": "Salem",
+  "stationLine": "NEWBURYPORT/ROCKPORT",
+  "stationPic": "https://upload.wikimedia.org/wikipedia/commons/6/60/Salem_Station_Platform.jpg"
+}
