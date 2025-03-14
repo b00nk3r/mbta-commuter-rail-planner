@@ -71,7 +71,7 @@ PUT http://localhost:8081/station/stationUpdateStationById
 Content-Type: application/json
 
 {
-  "id": "67d45d37042cb3256fdda42a",
+  "id": "67d45841df1ca9f6323154ba",
   "stationName": "SALEM",
   "city": "Salem",
   "stationLine": "NEWBURYPORT/ROCKPORT",
@@ -83,5 +83,8 @@ Get http://localhost:8081/station/getStationById
 Content-Type: application/json
 
 {
-  "stationId": "67d45841df1ca9f6323154ba"
+  "stationId": "67d45fc6ec31a2b307b47c87"
 }
+
+###
+POST  http://localhost:8081/station/deleteAll
