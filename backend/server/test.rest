@@ -77,3 +77,11 @@ Content-Type: application/json
   "stationLine": "NEWBURYPORT/ROCKPORT",
   "stationPic": "https://upload.wikimedia.org/wikipedia/commons/6/60/Salem_Station_Platform.jpg"
 }
+
+###
+Get http://localhost:8081/station/getStationById
+Content-Type: application/json
+
+{
+  "stationId": "67d45841df1ca9f6323154ba"
+}
