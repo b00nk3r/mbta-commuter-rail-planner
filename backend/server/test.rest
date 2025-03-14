@@ -50,3 +50,14 @@ Content-Type: application/json
 
 ###
 POST  http://localhost:8081/user/deleteAll
+
+###
+POST http://localhost:8081/station/stations
+Content-Type: application/json
+
+{
+  "stationName": "Salem",
+  "city": "Salem",
+  "stationLine": "NEWBURYPORT/ROCKPORT",
+  "stationPic": "https://upload.wikimedia.org/wikipedia/commons/6/60/Salem_Station_Platform.jpg"
+}

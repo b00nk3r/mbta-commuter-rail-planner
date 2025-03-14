@@ -11,6 +11,7 @@ const deleteUser = require('./routes/userDeleteAll')
 
 const deleteStationById = require('./routes/stationDeleteStationById')
 const getStationById = require('./routes/stationGetStationById')
+const stationCreateRoute = require('./routes/stationCreate')
 
 
 require('dotenv').config();
@@ -28,6 +29,7 @@ app.use('/user', deleteUser)
 
 app.use('/station', deleteStationById)
 app.use('/station', getStationById)
+app.use('/station', stationCreateRoute)
 
 app.listen(SERVER_PORT, (req, res) => {
     console.log(`The backend service is running on port ${SERVER_PORT} and waiting for requests.`);
