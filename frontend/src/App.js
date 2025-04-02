@@ -6,6 +6,7 @@ import './index.css';
 
 import MbtaAlertsPage from "./components/pages/mbtaAlerts";
 import MbtaLinesPage from "./components/pages/mbtaLines";
+import TripPlannerPage from "./components/pages/tripPlannerPage";
 
 // We import all the components we need in our app
 import Navbar from "./components/navbar";
@@ -39,6 +40,8 @@ const App = () => {
           <Route path="/privateUserProfile" element={<PrivateUserProfile />} />
           <Route exact path = "/mbtaAlerts" element ={<MbtaAlertsPage />} />
           <Route exact path = "/mbtaLines" element ={<MbtaLinesPage />} />
+          <Route exact path = "/tripPlannerPage" element ={<TripPlannerPage />} />
+
 
         </Routes>
       </UserContext.Provider>
