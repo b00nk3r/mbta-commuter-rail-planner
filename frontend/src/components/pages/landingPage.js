@@ -12,7 +12,12 @@ const Landingpage = () => {
                     <div className='mb-4'>
                     <Card.Link href="/signup" className="flex justify-center items-center justify-center items-center  text-3xl">Sign Up</Card.Link>
                     </div>
+                    <div className='mb-4'>
                     <Card.Link href="/login" className="flex justify-center items-center justify-center items-center text-3xl text-blue-30" >Login</Card.Link>
+                    </div>
+                    <div>
+                    <Card.Link href="/tripPlannerPage" className="flex justify-center items-center justify-center items-center text-3xl text-blue-30" >Continue as Guest</Card.Link>
+                    </div>
                 </Card.Body>
             </Card>
         </div>
