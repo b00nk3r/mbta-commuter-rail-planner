@@ -1,11 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const TripPlannerPage = () => {
   const [startStation, setStartStation] = useState('');
   const [stopStation, setStopStation] = useState('');
   const [isStationSelected, setIsStationSelected] = useState(false);
-  
-  const mapImage = require('../../images/mbta_map.png');
+  const [stations, setStations] = useState([]);
+
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const API_BASE_URL = 'http://localhost:8081';
+        const response = await axios.get(`${API_BASE_URL}/station/getAll`);
+        setStations(response.data);
+      } catch (error) {
+        console.error('Error fetching stations:', error);
+      }
+    };
+
+    fetchStations();
+  }, []);
 
   const handleStartSelection = (e) => {
     setStartStation(e.target.value);
@@ -41,8 +70,11 @@ const TripPlannerPage = () => {
                 className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
               >
                 <option value="">Select a station</option>
-                <option value="Salem">Salem</option>
-                <option value="North Station">North Station</option>
+                {stations.map(station => (
+                  <option key={station._id} value={station.stationName}>
+                    {station.stationName}
+                  </option>
+                ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -61,8 +93,11 @@ const TripPlannerPage = () => {
                 className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
               >
                 <option value="">Select a station</option>
-                <option value="Salem">Salem</option>
-                <option value="North Station">North Station</option>
+                {stations.map(station => (
+                  <option key={station._id} value={station.stationName}>
+                    {station.stationName}
+                  </option>
+                ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -80,18 +115,21 @@ const TripPlannerPage = () => {
         </div>
 
         {/* Right Panel - Map and Station Info */}
+        {/* Right Panel - Map and Station Info */}
         <div className="flex-1 flex flex-col relative">
           {/* Map Section */}
-          <div 
-            className="flex-1 relative"
-            style={{
-              backgroundImage: `url(${mapImage})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
+          <div className="flex-1 relative">
+            <MapContainer 
+              center={[42.360082, -71.058880]} // Boston coordinates
+              zoom={13} 
+              style={{ height: "100%", width: "100%" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+            </MapContainer>
           </div>
-
         </div>
       </div>
 
