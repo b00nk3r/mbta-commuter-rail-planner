@@ -21,6 +21,7 @@ const TripPlannerPage = () => {
   const [stopStation, setStopStation] = useState('');
   const [isStationSelected, setIsStationSelected] = useState(false);
   const [stations, setStations] = useState([]);
+  const massachusettsBounds = [[41.237964, -73.508142],[42.886589, -69.928393]];
 
   useEffect(() => {
     const fetchStations = async () => {
@@ -116,11 +117,16 @@ const TripPlannerPage = () => {
 
         {/* Right Panel - Map and Station Info */}
         <div className="flex-1 flex flex-col relative">
+          
           {/* Map Section */}
           <div className="flex-1 relative">
             <MapContainer
               center={[42.360082, -71.058880]} // Boston coordinates
               zoom={13}
+              minZoom={9}  // 🔽 Set minimum zoom level
+              maxZoom={11}  // 🔼 Set maximum zoom level
+              maxBounds={massachusettsBounds}
+              maxBoundsViscosity={1.0}
               style={{ height: "100%", width: "100%" }}
             >
               <TileLayer
