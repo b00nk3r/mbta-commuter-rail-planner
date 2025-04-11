@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -116,7 +116,6 @@ const TripPlannerPage = () => {
         </div>
 
         {/* Right Panel - Map and Station Info */}
-        {/* Right Panel - Map and Station Info */}
         <div className="flex-1 flex flex-col relative">
           
           {/* Map Section */}
@@ -134,6 +133,19 @@ const TripPlannerPage = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
+
+              <CircleMarker 
+                center={[42.5239, -70.8985]}
+                radius={8}
+                pathOptions={{ fillColor: 'blue', color: 'blue', fillOpacity: 1 }}
+                eventHandlers={{
+                  click: () => {
+                    alert('Salem marker clicked! Add your test functionality here.');
+                  }}
+                }
+              >
+              </CircleMarker>
+
             </MapContainer>
           </div>
         </div>
