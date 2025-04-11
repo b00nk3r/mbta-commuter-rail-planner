@@ -45,7 +45,7 @@ const TripPlannerPage = () => {
     setStopStation(e.target.value);
     checkBothStationsSelected(startStation, e.target.value);
   };
-  
+
   const checkBothStationsSelected = (start, stop) => {
     setIsStationSelected(start !== '' && stop !== '');
   };
@@ -118,9 +118,9 @@ const TripPlannerPage = () => {
         <div className="flex-1 flex flex-col relative">
           {/* Map Section */}
           <div className="flex-1 relative">
-            <MapContainer 
+            <MapContainer
               center={[42.360082, -71.058880]} // Boston coordinates
-              zoom={13} 
+              zoom={13}
               style={{ height: "100%", width: "100%" }}
             >
               <TileLayer
@@ -128,16 +128,22 @@ const TripPlannerPage = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
 
-              <CircleMarker 
+              <CircleMarker
                 center={[42.5239, -70.8985]}
                 radius={8}
                 pathOptions={{ fillColor: 'blue', color: 'blue', fillOpacity: 1 }}
-                eventHandlers={{
-                  click: () => {
-                    alert('Salem marker clicked! Add your test functionality here.');
-                  }}
-                }
               >
+                <Popup>
+                  <div style={{ width: '200px' }}>
+                    <h3 className="font-bold text-lg mb-1">Salem Station</h3>
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/6/60/Salem_Station_Platform.jpg"
+                      alt="Salem Station"
+                      className="w-full h-auto mb-2 rounded"
+                    />
+                    <p className="text-sm text-gray-700">Historic Salem commuter rail station, serving the Newburyport/Rockport Line.</p>
+                  </div>
+                </Popup>
               </CircleMarker>
 
             </MapContainer>
