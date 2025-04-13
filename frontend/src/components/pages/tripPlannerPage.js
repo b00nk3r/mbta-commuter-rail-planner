@@ -27,10 +27,15 @@ const TripPlannerPage = () => {
     const fetchStations = async () => {
       try {
         const API_BASE_URL = 'http://localhost:8081';
-        const response = await axios.get(`${API_BASE_URL}/station/getAll`);
-        setStations(response.data);
+        const response = await axios.get(`${API_BASE_URL}/mbtaStops/getAll`);
+        if (Array.isArray(response.data)) {
+          setStations(response.data);
+        } else {
+          setStations([]); // Set empty array if data is invalid
+        }
       } catch (error) {
         console.error('Error fetching stations:', error);
+        setStations([]);
       }
     };
 
@@ -50,6 +55,10 @@ const TripPlannerPage = () => {
   const checkBothStationsSelected = (start, stop) => {
     setIsStationSelected(start !== '' && stop !== '');
   };
+
+  const sortedStations = [...stations].sort((a, b) =>
+    a.stationName.localeCompare(b.stationName)
+  );
 
   return (
     <div className="flex flex-col h-screen">
@@ -71,7 +80,7 @@ const TripPlannerPage = () => {
                 className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
               >
                 <option value="">Select a station</option>
-                {stations.map(station => (
+                {sortedStations.map(station => (
                   <option key={station._id} value={station.stationName}>
                     {station.stationName}
                   </option>
@@ -94,7 +103,7 @@ const TripPlannerPage = () => {
                 className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
               >
                 <option value="">Select a station</option>
-                {stations.map(station => (
+                {sortedStations.map(station => (
                   <option key={station._id} value={station.stationName}>
                     {station.stationName}
                   </option>
@@ -134,23 +143,27 @@ const TripPlannerPage = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
 
-              <CircleMarker
-                center={[42.5239, -70.8985]}
-                radius={8}
-                pathOptions={{ fillColor: 'blue', color: 'blue', fillOpacity: 1 }}
-              >
-                <Popup>
-                  <div style={{ width: '200px' }}>
-                    <h3 className="font-bold text-lg mb-1">Salem Station</h3>
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/6/60/Salem_Station_Platform.jpg"
-                      alt="Salem Station"
-                      className="w-full h-auto mb-2 rounded"
-                    />
-                    <p className="text-sm text-gray-700">Historic Salem commuter rail station, serving the Newburyport/Rockport Line.</p>
-                  </div>
-                </Popup>
-              </CircleMarker>
+              {stations.map(station => {
+                if (station.latitude != null && station.longitude != null) {
+                  return (
+                    <CircleMarker
+                      key = {station._id}
+                      center={[station.latitude, station.longitude]}
+                      radius={6}
+                      pathOptions={{ fillColor: '#7B388C', color: '#7B388C', fillOpacity: 0.7 }}
+                    >
+                      <Popup>
+                        <div style={{ width: '200px' }}>
+                          <h3 className="font-bold text-lg mb-1">{station.stationName}</h3>
+                          <p className="text-sm text-gray-700">DESCRIPTION COMING SOON</p>
+                        </div>
+                      </Popup>
+                    </CircleMarker>
+                  );
+                } else {
+                  return null;
+                }
+              })}
 
             </MapContainer>
           </div>
