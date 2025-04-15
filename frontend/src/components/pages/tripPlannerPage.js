@@ -21,7 +21,7 @@ const TripPlannerPage = () => {
   const [stopStation, setStopStation] = useState('');
   const [isStationSelected, setIsStationSelected] = useState(false);
   const [stations, setStations] = useState([]);
-  const massachusettsBounds = [[41.237964, -73.508142],[42.886589, -69.928393]];
+  const massachusettsBounds = [[41.237964, -73.508142], [42.886589, -69.928393]];
 
   useEffect(() => {
     const fetchStations = async () => {
@@ -126,7 +126,7 @@ const TripPlannerPage = () => {
 
         {/* Right Panel - Map and Station Info */}
         <div className="flex-1 flex flex-col relative">
-          
+
           {/* Map Section */}
           <div className="flex-1 relative">
             <MapContainer
@@ -139,15 +139,16 @@ const TripPlannerPage = () => {
               style={{ height: "100%", width: "100%" }}
             >
               <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CartoDB</a>'
               />
+
 
               {stations.map(station => {
                 if (station.latitude != null && station.longitude != null) {
                   return (
                     <CircleMarker
-                      key = {station._id}
+                      key={station._id}
                       center={[station.latitude, station.longitude]}
                       radius={6}
                       pathOptions={{ fillColor: '#7B388C', color: '#7B388C', fillOpacity: 0.7 }}
