@@ -215,7 +215,8 @@ const TripPlannerPage = () => {
                       pathOptions={{
                         color: routeColor,
                         weight: 3,
-                        opacity: 0.7
+                        opacity: 0.7,
+                        interactive: false
                       }}
                     >
                     </Polyline>
@@ -229,7 +230,8 @@ const TripPlannerPage = () => {
                       key={station._id}
                       center={[station.latitude, station.longitude]}
                       radius={6}
-                      pathOptions={{ fillColor: '#7B388C', color: '#7B388C', fillOpacity: 0.7 }}
+                      pathOptions={{ fillColor: '#7B388C', color: '#7B388C', fillOpacity: 0.9 }}
+                      pane="tooltipPane"
                     >
                       <Popup>
                         <div style={{ width: '200px' }}>
