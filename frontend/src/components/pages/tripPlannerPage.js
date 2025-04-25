@@ -203,22 +203,24 @@ const TripPlannerPage = () => {
               />
 
               {/* Render polylines for routes */}
-              {routeLines.map(route => {
-                const decodedCoordinates = decodePolyline(route.polyline);
-                const routeColor = '#80276C';
-                return (
-                  <Polyline
-                    key={route._id}
-                    positions={decodedCoordinates}
-                    pathOptions={{
-                      color: routeColor,
-                      weight: 3,
-                      opacity: 0.7
-                    }}
-                  >
-                  </Polyline>
-                );
-              })}
+              {routeLines
+                .filter(route => route._id && route._id.startsWith('canonical-'))
+                .map(route => {
+                  const decodedCoordinates = decodePolyline(route.polyline);
+                  const routeColor = '#80276C';
+                  return (
+                    <Polyline
+                      key={route._id}
+                      positions={decodedCoordinates}
+                      pathOptions={{
+                        color: routeColor,
+                        weight: 3,
+                        opacity: 0.7
+                      }}
+                    >
+                    </Polyline>
+                  );
+                })}
 
               {stations.map(station => {
                 if (station.latitude != null && station.longitude != null) {
