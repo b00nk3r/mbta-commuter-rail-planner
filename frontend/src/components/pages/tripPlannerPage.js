@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -16,30 +16,89 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
+const decodePolyline = (encoded) => {
+  const points = [];
+  let index = 0;
+  const len = encoded.length;
+  let lat = 0;
+  let lng = 0;
+
+  while (index < len) {
+    let b;
+    let shift = 0;
+    let result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+    lat += dlat;
+
+    shift = 0;
+    result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+    lng += dlng;
+
+    points.push([lat / 1e5, lng / 1e5]);
+  }
+
+  return points;
+};
+
+const flattenRouteLines = (routeData) => {
+  if (!routeData || typeof routeData !== 'object') return [];
+  
+  const flattenedRoutes = [];
+  
+  Object.keys(routeData).forEach(routeKey => {
+    if (Array.isArray(routeData[routeKey])) {
+      flattenedRoutes.push(...routeData[routeKey]);
+    }
+  });
+  
+  return flattenedRoutes;
+};
+
 const TripPlannerPage = () => {
   const [startStation, setStartStation] = useState('');
   const [stopStation, setStopStation] = useState('');
   const [isStationSelected, setIsStationSelected] = useState(false);
   const [stations, setStations] = useState([]);
   const massachusettsBounds = [[41.237964, -73.508142], [42.886589, -69.928393]];
+  const [routeLines, setRouteLines] = useState([]);
 
   useEffect(() => {
-    const fetchStations = async () => {
+    const fetchData = async () => {
       try {
         const API_BASE_URL = 'http://localhost:8081';
         const response = await axios.get(`${API_BASE_URL}/mbtaStops/getAll`);
         if (Array.isArray(response.data)) {
           setStations(response.data);
         } else {
-          setStations([]); // Set empty array if data is invalid
+          setStations([]);
+        }
+
+        const routesResponse = await axios.get(`${API_BASE_URL}/mbtaShapes/getAll`);
+        const flattenedRoutes = flattenRouteLines(routesResponse.data);
+        if (flattenedRoutes.length > 0) {
+          setRouteLines(flattenedRoutes);
+        } else {
+            setRouteLines([]);
         }
       } catch (error) {
         console.error('Error fetching stations:', error);
         setStations([]);
+        setRouteLines([]);
       }
     };
 
-    fetchStations();
+    fetchData();
   }, []);
 
   const handleStartSelection = (e) => {
@@ -143,6 +202,23 @@ const TripPlannerPage = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CartoDB</a>'
               />
 
+              {/* Render polylines for routes */}
+              {routeLines.map(route => {
+                const decodedCoordinates = decodePolyline(route.polyline);
+                const routeColor = '#80276C';
+                return (
+                  <Polyline
+                    key={route._id}
+                    positions={decodedCoordinates}
+                    pathOptions={{
+                      color: routeColor,
+                      weight: 3,
+                      opacity: 0.7
+                    }}
+                  >
+                  </Polyline>
+                );
+              })}
 
               {stations.map(station => {
                 if (station.latitude != null && station.longitude != null) {
