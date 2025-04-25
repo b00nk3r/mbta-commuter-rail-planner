@@ -106,3 +106,6 @@ Content-Type: application/json
 GET http://localhost:8081/mbtaLines/getAll
 Content-Type: application/json
 
+###
+GET http://localhost:8081/mbtaShapes/getAll
+Content-Type: application/json
