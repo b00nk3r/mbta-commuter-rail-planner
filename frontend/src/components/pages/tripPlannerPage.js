@@ -70,6 +70,7 @@ const TripPlannerPage = () => {
   const [stopStation, setStopStation] = useState('');
   const [isStationSelected, setIsStationSelected] = useState(false);
   const [stations, setStations] = useState([]);
+  const [lines, setLines]  = useState([]);
   const massachusettsBounds = [[41.237964, -73.508142], [42.886589, -69.928393]];
   const [routeLines, setRouteLines] = useState([]);
 
@@ -91,11 +92,23 @@ const TripPlannerPage = () => {
         } else {
             setRouteLines([]);
         }
+
+        const linesResponse = await axios.get(`${API_BASE_URL}/mbtaLines/getAll`);
+        if (Array.isArray(linesResponse.data)) {
+          setLines(linesResponse.data);
+          console.log(setLines);
+        } else {
+          setLines([]);
+        }
+
       } catch (error) {
         console.error('Error fetching stations:', error);
         setStations([]);
         setRouteLines([]);
+        setLines([]);
       }
+
+
     };
 
     fetchData();
@@ -119,6 +132,11 @@ const TripPlannerPage = () => {
     a.stationName.localeCompare(b.stationName)
   );
 
+  const sortedLines = [...lines].sort((a, b) =>
+    a.lineName.localeCompare(b.lineName)
+  );
+
+ 
   return (
     <div className="flex flex-col h-screen">
       <header className="bg-white shadow-md py-4">
@@ -130,6 +148,31 @@ const TripPlannerPage = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel */}
         <div className="w-96 bg-gray-100 p-6 overflow-y-auto shadow-lg">
+
+        {/* Select Line */}
+        <div className="mb-6">
+            <h2 className="text-2xl font-semibold mb-2 text-gray-700">Line</h2>
+            <div className="relative">
+              <select
+                className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
+              >
+                <option value="">Select a Commuter Rail Line</option>
+                {sortedLines.map(line => (
+                  <option key={line._id} value={line.lineName}>
+                    {line.lineName}
+                  </option>
+                ))}
+                
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Select Start */}
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2 text-gray-700">Start</h2>
             <div className="relative">
@@ -153,6 +196,7 @@ const TripPlannerPage = () => {
             </div>
           </div>
 
+          {/* Select Stop */}
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2 text-gray-700">Stop</h2>
             <div className="relative">
