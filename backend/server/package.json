@@ -25,6 +25,7 @@
     "i": "^0.3.7",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.5",
+    "polyline-encoded": "^0.0.9",
     "zod": "^3.19.1"
   },
   "devDependencies": {

@@ -17,6 +17,8 @@ const stationUpdateStationById = require('./routes/stationUpdateStationById')
 const stationDeleteAllStations = require('./routes/stationDeleteAllStations')
 
 const mbtaStopsGetAll = require('./routes/mbtaStopsGetAll')
+const mbtaLinesGetAll = require('./routes/mbtaLinesGetAll')
+const mbtaShapesGetAll = require('./routes/mbtaShapesGetAll')
 
 require('dotenv').config();
 const SERVER_PORT = 8081
@@ -39,6 +41,8 @@ app.use('/station', stationUpdateStationById)
 app.use('/station', stationDeleteAllStations)
 
 app.use('/mbtaStops', mbtaStopsGetAll)
+app.use('/mbtaLines', mbtaLinesGetAll)
+app.use('/mbtaShapes', mbtaShapesGetAll)
 
 app.listen(SERVER_PORT, (req, res) => {
     console.log(`The backend service is running on port ${SERVER_PORT} and waiting for requests.`);
