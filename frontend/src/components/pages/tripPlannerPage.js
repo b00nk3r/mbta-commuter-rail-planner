@@ -16,6 +16,42 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
+const TERMINALS = {
+  "north": ["CR-Fitchburg", "CR-Lowell", "CR-Haverhill", "CR-Newburyport"],
+  "sstat": ["CR-Fairmount", "CR-Worcester", "CR-Franklin", "CR-Providence", "CR-Kingston", "CR-Needham", "CR-Greenbush", "CR-NewBedford"]
+};
+
+const LINE_TO_PREFIX_MAP = {
+  "CR-Fairmount": ["DB"],
+  "CR-NewBedford": ["NBM", "FRS", "MM", "brntn", "qnctr", "jfk"],
+  "CR-Fitchburg": ["FR", "portr", "north"],
+  "CR-Worcester": ["WML", "bbsta"],
+  "CR-Franklin": ["FB", "forhl", "rugg"],
+  "CR-Foxboro": ["FS"],
+  "CR-Greenbush": ["GRB"],
+  "CR-Haverhill": ["WR", "ogmnl", "mlmnl"],
+  "CR-Kingston": ["KB", "PB", "brntn", "qnctr", "jfk"],
+  "CR-Lowell": ["NHRML"],
+  "CR-Needham": ["NB", "forhl", "rugg"],
+  "CR-Newburyport": ["GB", "ER", "wondl", "chels"],
+  "CR-Providence": ["NEC", "bbsta"],
+  "Common-Stations": ["sstat", "north"]
+};
+
+const getStationPrefix = (stationId) => {
+  if (!stationId) return "";
+  
+  // Handle special cases for stations without dashes
+  if (!stationId.includes("-")) {
+      return stationId;
+  }
+  
+  const parts = stationId.split("-");
+  if (parts.length < 2) return "";
+  
+  return parts[1];
+};
+
 const decodePolyline = (encoded) => {
   const points = [];
   let index = 0;
@@ -66,6 +102,8 @@ const flattenRouteLines = (routeData) => {
 };
 
 const TripPlannerPage = () => {
+  const [selectedLine, setSelectedLine] = useState('');
+  const [selectedLineId, setSelectedLineId] = useState('');
   const [startStation, setStartStation] = useState('');
   const [stopStation, setStopStation] = useState('');
   const [isStationSelected, setIsStationSelected] = useState(false);
@@ -73,6 +111,7 @@ const TripPlannerPage = () => {
   const [lines, setLines]  = useState([]);
   const massachusettsBounds = [[41.237964, -73.508142], [42.886589, -69.928393]];
   const [routeLines, setRouteLines] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +126,7 @@ const TripPlannerPage = () => {
 
         const routesResponse = await axios.get(`${API_BASE_URL}/mbtaShapes/getAll`);
         const flattenedRoutes = flattenRouteLines(routesResponse.data);
+        console.log("Route data structure:", flattenedRoutes[0]);
         if (flattenedRoutes.length > 0) {
           setRouteLines(flattenedRoutes);
         } else {
@@ -96,7 +136,7 @@ const TripPlannerPage = () => {
         const linesResponse = await axios.get(`${API_BASE_URL}/mbtaLines/getAll`);
         if (Array.isArray(linesResponse.data)) {
           setLines(linesResponse.data);
-          console.log(setLines);
+          console.log("Lines data:", linesResponse.data);
         } else {
           setLines([]);
         }
@@ -114,6 +154,57 @@ const TripPlannerPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (!selectedLineId) {
+        setFilteredStations([]);
+        return;
+    }
+
+    console.log("Finding stations for line ID:", selectedLineId);
+    
+    const validPrefixes = LINE_TO_PREFIX_MAP[selectedLineId] || [];
+    console.log("Valid prefixes for this line:", validPrefixes);
+    
+    const stationsOnLine = stations.filter(station => {
+        if (!station._id) return false;
+        
+        const stationIdLower = station._id.toLowerCase();
+        
+        if (stationIdLower.includes("north") && 
+            TERMINALS["north"].includes(selectedLineId)) {
+            return true;
+        }
+        
+        if (stationIdLower.includes("sstat") && 
+            TERMINALS["sstat"].includes(selectedLineId)) {
+            return true;
+        }
+        
+        const prefix = getStationPrefix(station._id);
+        return validPrefixes.includes(prefix);
+    });
+    
+    console.log(`Found ${stationsOnLine.length} stations for line ${selectedLineId}`);
+    
+    setFilteredStations(stationsOnLine);
+    setStartStation('');
+    setStopStation('');
+    setIsStationSelected(false);
+  }, [selectedLineId, stations]);
+
+  const handleLineSelection = (e) => {
+    const lineName = e.target.value;
+    setSelectedLine(lineName);
+    
+    const selectedLineObj = lines.find(line => line.lineName === lineName);
+    if (selectedLineObj) {
+        setSelectedLineId(selectedLineObj._id);
+        console.log(`Selected line: ${lineName}, ID: ${selectedLineObj._id}`);
+    } else {
+        setSelectedLineId('');
+    }
+  };
+
   const handleStartSelection = (e) => {
     setStartStation(e.target.value);
     checkBothStationsSelected(e.target.value, stopStation);
@@ -128,13 +219,21 @@ const TripPlannerPage = () => {
     setIsStationSelected(start !== '' && stop !== '');
   };
 
-  const sortedStations = [...stations].sort((a, b) =>
+  const sortedStations = [...filteredStations].sort((a, b) =>
     a.stationName.localeCompare(b.stationName)
   );
 
   const sortedLines = [...lines].sort((a, b) =>
     a.lineName.localeCompare(b.lineName)
   );
+
+  const isRouteOnSelectedLine = (route) => {
+    // Check if the route matches the selected line ID
+    return (
+        (route.routeId === selectedLineId) ||
+        (selectedLineId && route._id && route._id.includes(selectedLineId))
+    );
+  };
 
  
   return (
@@ -154,6 +253,8 @@ const TripPlannerPage = () => {
             <h2 className="text-2xl font-semibold mb-2 text-gray-700">Line</h2>
             <div className="relative">
               <select
+                value={selectedLine}
+                onChange={handleLineSelection}
                 className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
               >
                 <option value="">Select a Commuter Rail Line</option>
@@ -170,6 +271,11 @@ const TripPlannerPage = () => {
                 </svg>
               </div>
             </div>
+            {!selectedLine && (
+              <p className="text-red-700 mt-2 text-lg">
+                Please select a line first
+              </p>
+            )}
           </div>
 
           {/* Select Start */}
@@ -180,6 +286,7 @@ const TripPlannerPage = () => {
                 value={startStation}
                 onChange={handleStartSelection}
                 className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
+                disabled={!selectedLine}
               >
                 <option value="">Select a station</option>
                 {sortedStations.map(station => (
@@ -204,6 +311,7 @@ const TripPlannerPage = () => {
                 value={stopStation}
                 onChange={handleStopSelection}
                 className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
+                disabled={!selectedLine}
               >
                 <option value="">Select a station</option>
                 {sortedStations.map(station => (
@@ -251,15 +359,18 @@ const TripPlannerPage = () => {
                 .filter(route => route._id && route._id.startsWith('canonical-'))
                 .map(route => {
                   const decodedCoordinates = decodePolyline(route.polyline);
+                  const isSelectedLine = selectedLine && isRouteOnSelectedLine(route);
                   const routeColor = '#80276C';
+                  const opacity = isSelectedLine ? 0.8 : 0.2;
+                  const weight = isSelectedLine ? 5 : 2;
                   return (
                     <Polyline
                       key={route._id}
                       positions={decodedCoordinates}
                       pathOptions={{
                         color: routeColor,
-                        weight: 3,
-                        opacity: 0.7,
+                        weight: weight,
+                        opacity: opacity,
                         interactive: false
                       }}
                     >
