@@ -40,15 +40,15 @@ const LINE_TO_PREFIX_MAP = {
 
 const getStationPrefix = (stationId) => {
   if (!stationId) return "";
-  
+
   // Handle special cases for stations without dashes
   if (!stationId.includes("-")) {
-      return stationId;
+    return stationId;
   }
-  
+
   const parts = stationId.split("-");
   if (parts.length < 2) return "";
-  
+
   return parts[1];
 };
 
@@ -89,15 +89,15 @@ const decodePolyline = (encoded) => {
 
 const flattenRouteLines = (routeData) => {
   if (!routeData || typeof routeData !== 'object') return [];
-  
+
   const flattenedRoutes = [];
-  
+
   Object.keys(routeData).forEach(routeKey => {
     if (Array.isArray(routeData[routeKey])) {
       flattenedRoutes.push(...routeData[routeKey]);
     }
   });
-  
+
   return flattenedRoutes;
 };
 
@@ -108,8 +108,8 @@ const TripPlannerPage = () => {
   const [stopStation, setStopStation] = useState('');
   const [isStationSelected, setIsStationSelected] = useState(false);
   const [stations, setStations] = useState([]);
-  const [lines, setLines]  = useState([]);
-  const massachusettsBounds = [[41.237964, -73.508142], [42.886589, -69.928393]];
+  const [lines, setLines] = useState([]);
+  const massachusettsBounds = [[41.237964, -73.508142], [43.222, -69.928393]];
   const [routeLines, setRouteLines] = useState([]);
   const [filteredStations, setFilteredStations] = useState([]);
 
@@ -130,7 +130,7 @@ const TripPlannerPage = () => {
         if (flattenedRoutes.length > 0) {
           setRouteLines(flattenedRoutes);
         } else {
-            setRouteLines([]);
+          setRouteLines([]);
         }
 
         const linesResponse = await axios.get(`${API_BASE_URL}/mbtaLines/getAll`);
@@ -156,36 +156,36 @@ const TripPlannerPage = () => {
 
   useEffect(() => {
     if (!selectedLineId) {
-        setFilteredStations([]);
-        return;
+      setFilteredStations([]);
+      return;
     }
 
     console.log("Finding stations for line ID:", selectedLineId);
-    
+
     const validPrefixes = LINE_TO_PREFIX_MAP[selectedLineId] || [];
     console.log("Valid prefixes for this line:", validPrefixes);
-    
+
     const stationsOnLine = stations.filter(station => {
-        if (!station._id) return false;
-        
-        const stationIdLower = station._id.toLowerCase();
-        
-        if (stationIdLower.includes("north") && 
-            TERMINALS["north"].includes(selectedLineId)) {
-            return true;
-        }
-        
-        if (stationIdLower.includes("sstat") && 
-            TERMINALS["sstat"].includes(selectedLineId)) {
-            return true;
-        }
-        
-        const prefix = getStationPrefix(station._id);
-        return validPrefixes.includes(prefix);
+      if (!station._id) return false;
+
+      const stationIdLower = station._id.toLowerCase();
+
+      if (stationIdLower.includes("north") &&
+        TERMINALS["north"].includes(selectedLineId)) {
+        return true;
+      }
+
+      if (stationIdLower.includes("sstat") &&
+        TERMINALS["sstat"].includes(selectedLineId)) {
+        return true;
+      }
+
+      const prefix = getStationPrefix(station._id);
+      return validPrefixes.includes(prefix);
     });
-    
+
     console.log(`Found ${stationsOnLine.length} stations for line ${selectedLineId}`);
-    
+
     setFilteredStations(stationsOnLine);
     setStartStation('');
     setStopStation('');
@@ -195,13 +195,13 @@ const TripPlannerPage = () => {
   const handleLineSelection = (e) => {
     const lineName = e.target.value;
     setSelectedLine(lineName);
-    
+
     const selectedLineObj = lines.find(line => line.lineName === lineName);
     if (selectedLineObj) {
-        setSelectedLineId(selectedLineObj._id);
-        console.log(`Selected line: ${lineName}, ID: ${selectedLineObj._id}`);
+      setSelectedLineId(selectedLineObj._id);
+      console.log(`Selected line: ${lineName}, ID: ${selectedLineObj._id}`);
     } else {
-        setSelectedLineId('');
+      setSelectedLineId('');
     }
   };
 
@@ -230,12 +230,12 @@ const TripPlannerPage = () => {
   const isRouteOnSelectedLine = (route) => {
     // Check if the route matches the selected line ID
     return (
-        (route.routeId === selectedLineId) ||
-        (selectedLineId && route._id && route._id.includes(selectedLineId))
+      (route.routeId === selectedLineId) ||
+      (selectedLineId && route._id && route._id.includes(selectedLineId))
     );
   };
 
- 
+
   return (
     <div className="flex flex-col h-screen">
       <header className="bg-white shadow-md py-4">
@@ -248,8 +248,8 @@ const TripPlannerPage = () => {
         {/* Left Panel */}
         <div className="w-96 bg-gray-100 p-6 overflow-y-auto shadow-lg">
 
-        {/* Select Line */}
-        <div className="mb-6">
+          {/* Select Line */}
+          <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2 text-gray-700">Line</h2>
             <div className="relative">
               <select
@@ -263,7 +263,7 @@ const TripPlannerPage = () => {
                     {line.lineName}
                   </option>
                 ))}
-                
+
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -391,7 +391,20 @@ const TripPlannerPage = () => {
                       <Popup>
                         <div style={{ width: '200px' }}>
                           <h3 className="font-bold text-lg mb-1">{station.stationName}</h3>
-                          <p className="text-sm text-gray-700">DESCRIPTION COMING SOON</p>
+                          {/* Add this image block */}
+                          {station.imageUrl && (
+                            <img
+                              src={station.imageUrl}
+                              alt={station.stationName}
+                              style={{
+                                width: '100%',
+                                height: 'auto',
+                                marginBottom: '0.5rem',
+                                borderRadius: '6px',
+                                objectFit: 'cover',
+                              }}
+                            />
+                          )}
                         </div>
                       </Popup>
                     </CircleMarker>
