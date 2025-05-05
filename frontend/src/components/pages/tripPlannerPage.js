@@ -196,6 +196,10 @@ const TripPlannerPage = () => {
     const lineName = e.target.value;
     setSelectedLine(lineName);
 
+    setStartStation('');
+    setStopStation('');
+    setIsStationSelected(false);
+
     const selectedLineObj = lines.find(line => line.lineName === lineName);
     if (selectedLineObj) {
       setSelectedLineId(selectedLineObj._id);
@@ -380,33 +384,95 @@ const TripPlannerPage = () => {
 
               {stations.map(station => {
                 if (station.latitude != null && station.longitude != null) {
+                  const isOnSelectedLine = selectedLineId && filteredStations.some(
+                    fs => fs._id === station._id
+                  );
+
+                  const isStartStation = station.stationName === startStation;
+                  const isStopStation = station.stationName === stopStation;
+
+                  let fillColor, strokeColor, opacity, radius, interactive;
+        
+                  if (isStartStation) {
+                      // Start station styling
+                      fillColor = '#FFFFFF';
+                      strokeColor = '#000000';
+                      opacity = 1;
+                      radius = 8;
+                      interactive = true;
+                  } else if (isStopStation) {
+                      // Stop station styling
+                      fillColor = '#FFFFFF';
+                      strokeColor = '#000000';
+                      opacity = 1;
+                      radius = 8;
+                      interactive = true;
+                  } else if (isOnSelectedLine) {
+                      // Station on selected line styling
+                      fillColor = '#80276C'; // Purple
+                      strokeColor = '#80276C';
+                      opacity = 0.9;
+                      radius = 6;
+                      interactive = true;
+                  } else if (selectedLineId) {
+                      // Inactive stations styling (when a line is selected)
+                      fillColor = '#E8D5E4';
+                      strokeColor = '#E8D5E4';
+                      opacity = 0.3; // Much lower opacity
+                      radius = 4; // Smaller radius
+                      interactive = false; // Not interactive
+                  } else {
+                      // Default styling when no line is selected
+                      fillColor = '#7B388C'; // Default purple
+                      strokeColor = '#7B388C';
+                      opacity = 0.7;
+                      radius = 5;
+                      interactive = true;
+                  }
+                  
                   return (
                     <CircleMarker
                       key={station._id}
                       center={[station.latitude, station.longitude]}
                       radius={6}
-                      pathOptions={{ fillColor: '#7B388C', color: '#7B388C', fillOpacity: 0.9 }}
+                      pathOptions={{ 
+                        fillColor: fillColor, 
+                        color: strokeColor, 
+                        fillOpacity: opacity,
+                        opacity: opacity * 0.8 // Slightly lower opacity for the border
+                      }}
                       pane="tooltipPane"
+                      eventHandlers={{
+                        click: (e) => {
+                            // Prevent click events for inactive stations
+                            if (!interactive) {
+                                e.originalEvent.stopPropagation();
+                                e.originalEvent.preventDefault();
+                            }
+                        }
+                      }}
                     >
-                      <Popup>
-                        <div style={{ width: '200px' }}>
-                          <h3 className="font-bold text-lg mb-1">{station.stationName}</h3>
-                          {/* Add this image block */}
-                          {station.imageUrl && (
-                            <img
-                              src={station.imageUrl}
-                              alt={station.stationName}
-                              style={{
-                                width: '100%',
-                                height: 'auto',
-                                marginBottom: '0.5rem',
-                                borderRadius: '6px',
-                                objectFit: 'cover',
-                              }}
-                            />
-                          )}
-                        </div>
-                      </Popup>
+                      {interactive && (
+                        <Popup>
+                          <div style={{ width: '200px' }}>
+                            <h3 className="font-bold text-lg mb-1">{station.stationName}</h3>
+                            {/* Add this image block */}
+                            {station.imageUrl && (
+                              <img
+                                src={station.imageUrl}
+                                alt={station.stationName}
+                                style={{
+                                  width: '100%',
+                                  height: 'auto',
+                                  marginBottom: '0.5rem',
+                                  borderRadius: '6px',
+                                  objectFit: 'cover',
+                                }}
+                              />
+                            )}
+                          </div>
+                        </Popup>
+                      )}
                     </CircleMarker>
                   );
                 } else {
