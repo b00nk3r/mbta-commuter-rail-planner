@@ -18,6 +18,7 @@ import PrivateUserProfile from "./components/pages/privateUserProfilePage";
 import { createContext, useState, useEffect } from "react";
 import getUserInfo from "./utilities/decodeJwt";
 import MapPage from "./components/pages/mapPage";
+import TripSummaryPage  from "./components/pages/tripSummaryPage";
 
 export const UserContext = createContext();
 //test change
@@ -43,6 +44,8 @@ const App = () => {
           <Route exact path = "/mbtaLines" element ={<MbtaLinesPage />} />
           <Route exact path = "/tripPlannerPage" element ={<TripPlannerPage />} />
           <Route exact path = "/mapPage" element ={<MapPage/>} />
+          <Route exact path = "/tripSummaryPage" element ={<TripSummaryPage />} />
+
 
 
 

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { MapContainer, TileLayer, CircleMarker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { Link } from 'react-router-dom';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -487,12 +488,14 @@ const TripPlannerPage = () => {
 
       {/* Bottom Navigation */}
       <div className="bg-gray-200 p-4 flex justify-end">
+      <Link to="/tripSummaryPage">
         <button
           className="bg-gray-700 hover:bg-gray-900 text-white font-bold py-2 px-8 rounded text-xl"
           disabled={!isStationSelected}
         >
           Next
         </button>
+      </Link>
       </div>
     </div>
   );
