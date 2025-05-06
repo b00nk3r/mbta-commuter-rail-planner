@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MapContainer, TileLayer, CircleMarker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, Polyline, Pane } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Link } from 'react-router-dom';
@@ -19,7 +19,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const TERMINALS = {
   "north": ["CR-Fitchburg", "CR-Lowell", "CR-Haverhill", "CR-Newburyport"],
-  "sstat": ["CR-Fairmount", "CR-Worcester", "CR-Franklin", "CR-Providence", "CR-Kingston", "CR-Needham", "CR-Greenbush", "CR-NewBedford"]
+  "sstat": ["CR-Fairmount", "CR-Worcester", "CR-Franklin", "CR-Providence", "CR-Kingston", "CR-Needham", "CR-Greenbush", "CR-NewBedford", "CR-Foxboro"]
 };
 
 const LINE_TO_PREFIX_MAP = {
@@ -107,12 +107,12 @@ const TripPlannerPage = () => {
   const [selectedLineId, setSelectedLineId] = useState('');
   const [startStation, setStartStation] = useState('');
   const [stopStation, setStopStation] = useState('');
-  const [isStationSelected, setIsStationSelected] = useState(false);
+  const [isStopStationSelected, setIsStopStationSelected] = useState(false);
   const [stations, setStations] = useState([]);
   const [lines, setLines] = useState([]);
   const massachusettsBounds = [[41.237964, -73.508142], [43.222, -69.928393]];
   const [routeLines, setRouteLines] = useState([]);
-  const [filteredStations, setFilteredStations] = useState([]);
+  const [stationsForStopDropdown, setStationsForStopDropdown] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -156,42 +156,31 @@ const TripPlannerPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!selectedLineId) {
-      setFilteredStations([]);
+    if (!selectedLineId || !startStation) {
+      setStationsForStopDropdown([]);
       return;
     }
 
-    console.log("Finding stations for line ID:", selectedLineId);
-
     const validPrefixes = LINE_TO_PREFIX_MAP[selectedLineId] || [];
-    console.log("Valid prefixes for this line:", validPrefixes);
 
     const stationsOnLine = stations.filter(station => {
       if (!station._id) return false;
 
       const stationIdLower = station._id.toLowerCase();
 
-      if (stationIdLower.includes("north") &&
-        TERMINALS["north"].includes(selectedLineId)) {
-        return true;
-      }
-
-      if (stationIdLower.includes("sstat") &&
-        TERMINALS["sstat"].includes(selectedLineId)) {
-        return true;
-      }
+      if (stationIdLower.includes("north") && TERMINALS["north"].includes(selectedLineId)) return true;
+      if (stationIdLower.includes("sstat") && TERMINALS["sstat"].includes(selectedLineId)) return true;
 
       const prefix = getStationPrefix(station._id);
       return validPrefixes.includes(prefix);
     });
 
-    console.log(`Found ${stationsOnLine.length} stations for line ${selectedLineId}`);
+    const filteredForStop = stationsOnLine.filter(station => station.stationName !== startStation);
 
-    setFilteredStations(stationsOnLine);
-    setStartStation('');
+    setStationsForStopDropdown(filteredForStop);
     setStopStation('');
-    setIsStationSelected(false);
-  }, [selectedLineId, stations]);
+    setIsStopStationSelected(false);
+  }, [selectedLineId, startStation, stations]);
 
   const handleLineSelection = (e) => {
     const lineName = e.target.value;
@@ -199,32 +188,50 @@ const TripPlannerPage = () => {
 
     setStartStation('');
     setStopStation('');
-    setIsStationSelected(false);
+    setIsStopStationSelected(false);
+    setSelectedLineId('');
+    setStationsForStopDropdown([]);
 
     const selectedLineObj = lines.find(line => line.lineName === lineName);
     if (selectedLineObj) {
-      setSelectedLineId(selectedLineObj._id);
-      console.log(`Selected line: ${lineName}, ID: ${selectedLineObj._id}`);
+      const lineId = selectedLineObj._id;
+      setSelectedLineId(lineId);
+
+      let determinedStartStationName = '';
+      if (TERMINALS.north.includes(lineId)) {
+        const northStationObj = stations.find(s => s._id && s._id.toLowerCase().includes('north'));
+        if (northStationObj) {
+          determinedStartStationName = northStationObj.stationName;
+        } else {
+          console.error("Could not find North Station data!");
+        }
+      } else if (TERMINALS.sstat.includes(lineId)) {
+        const southStationObj = stations.find(s => s._id && s._id.toLowerCase().includes('sstat'));
+        if (southStationObj) {
+          determinedStartStationName = southStationObj.stationName;
+        } else {
+           console.error("Could not find South Station data!");
+        }
+      } else {
+          console.warn(`Line ${lineId} not found in North or South terminal lists.`);
+      }
+      setStartStation(determinedStartStationName);
     } else {
-      setSelectedLineId('');
+        console.log("No line object found for name:", lineName);
     }
   };
 
-  const handleStartSelection = (e) => {
-    setStartStation(e.target.value);
-    checkBothStationsSelected(e.target.value, stopStation);
-  };
-
   const handleStopSelection = (e) => {
-    setStopStation(e.target.value);
-    checkBothStationsSelected(startStation, e.target.value);
+    const selectedStop = e.target.value;
+    setStopStation(selectedStop);
+    checkStopStationSelected(selectedStop); // Check if a stop station is now selected
   };
 
-  const checkBothStationsSelected = (start, stop) => {
-    setIsStationSelected(start !== '' && stop !== '');
+  const checkStopStationSelected = (start, stop) => {
+    setIsStopStationSelected(selectedLine !== '' && startStation !== '' && stop !== '');
   };
 
-  const sortedStations = [...filteredStations].sort((a, b) =>
+  const sortedStationsForStop = [...stationsForStopDropdown].sort((a, b) =>
     a.stationName.localeCompare(b.stationName)
   );
 
@@ -283,43 +290,28 @@ const TripPlannerPage = () => {
             )}
           </div>
 
-          {/* Select Start */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2 text-gray-700">Start</h2>
-            <div className="relative">
-              <select
-                value={startStation}
-                onChange={handleStartSelection}
-                className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
-                disabled={!selectedLine}
-              >
-                <option value="">Select a station</option>
-                {sortedStations.map(station => (
-                  <option key={station._id} value={station.stationName}>
-                    {station.stationName}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                </svg>
-              </div>
+           {/* Display Start Station (Replaces Start Dropdown) */}
+           <div className="mb-6">
+            <h2 className="text-2xl font-semibold mb-2 text-gray-700">Start Station</h2>
+            <div className="w-full p-3 border border-gray-200 bg-gray-200 rounded text-lg text-gray-600 min-h-[50px]">
+              {startStation ? startStation : (selectedLine ? 'Determining...' : 'Select line above')}
             </div>
           </div>
 
           {/* Select Stop */}
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2 text-gray-700">Stop</h2>
+            <h2 className="text-2xl font-semibold mb-2 text-gray-700">Destination</h2>
             <div className="relative">
               <select
                 value={stopStation}
                 onChange={handleStopSelection}
                 className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
-                disabled={!selectedLine}
+                disabled={!selectedLine || !startStation || sortedStationsForStop.length === 0}
               >
-                <option value="">Select a station</option>
-                {sortedStations.map(station => (
+                <option value="">
+                  {startStation ? 'Select a destination' : 'Select line first'}
+                </option>
+                {sortedStationsForStop.map(station => (
                   <option key={station._id} value={station.stationName}>
                     {station.stationName}
                   </option>
@@ -332,9 +324,9 @@ const TripPlannerPage = () => {
               </div>
             </div>
 
-            {!isStationSelected && (
+            {selectedLine && startStation && !isStopStationSelected && (
               <p className="text-red-700 mt-2 text-lg">
-                Please select both a start and stop station
+                Please select a stop station.
               </p>
             )}
           </div>
@@ -354,80 +346,101 @@ const TripPlannerPage = () => {
               maxBoundsViscosity={1.0}
               style={{ height: "100%", width: "100%" }}
             >
+
+
+              <Pane name="unselectedLinesPane"        style={{ zIndex: 440 }} />
+              <Pane name="inactiveStationMarkersPane" style={{ zIndex: 450 }} />
+              <Pane name="selectedLinePane"           style={{ zIndex: 500 }} />
+              <Pane name="activeStationMarkersPane"   style={{ zIndex: 600 }} />
+
               <TileLayer
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CartoDB</a>'
               />
+
 
               {/* Render polylines for routes */}
               {routeLines
                 .filter(route => route._id && route._id.startsWith('canonical-'))
                 .map(route => {
                   const decodedCoordinates = decodePolyline(route.polyline);
-                  const isSelectedLine = selectedLine && isRouteOnSelectedLine(route);
-                  const routeColor = '#80276C';
-                  const opacity = isSelectedLine ? 0.8 : 0.2;
-                  const weight = isSelectedLine ? 5 : 2;
                   return (
                     <Polyline
-                      key={route._id}
+                      key={`${route._id}-unselected`} // Ensure unique key
                       positions={decodedCoordinates}
+                      pane="unselectedLinesPane"
                       pathOptions={{
-                        color: routeColor,
-                        weight: weight,
-                        opacity: opacity,
+                        color: '#DAB1DA', // Color for unselected lines
+                        weight: 2.5,      // Weight for unselected lines
+                        opacity: 1,     // Opacity for unselected lines
                         interactive: false
                       }}
-                    >
-                    </Polyline>
+                    />
                   );
                 })}
 
+                {routeLines
+                .filter(route => route._id && route._id.startsWith('canonical-') && isRouteOnSelectedLine(route))
+                .map(route => {
+                  const decodedCoordinates = decodePolyline(route.polyline);
+                  return (
+                    <Polyline
+                      key={`${route._id}-selected`} // Ensure unique key
+                      positions={decodedCoordinates}
+                      pane="selectedLinePane"
+                      pathOptions={{
+                        color: '#80276C', // Color for selected line
+                        weight: 5,        // Weight for selected line
+                        opacity: 1,     // Opacity for selected line
+                        interactive: false
+                      }}
+                    />
+                  );
+                })}     
+
               {stations.map(station => {
                 if (station.latitude != null && station.longitude != null) {
-                  const isOnSelectedLine = selectedLineId && filteredStations.some(
-                    fs => fs._id === station._id
-                  );
+                  let calculatedIsOnSelectedLine = false;
+                  if (selectedLineId && station._id) { const stationIdLower = station._id.toLowerCase(); const isNorthTerminalMatch = stationIdLower.includes("north") && TERMINALS["north"].includes(selectedLineId); const isSouthTerminalMatch = stationIdLower.includes("sstat") && TERMINALS["sstat"].includes(selectedLineId); const stationPrefix = getStationPrefix(station._id); const validPrefixes = LINE_TO_PREFIX_MAP[selectedLineId] || []; const isPrefixMatch = validPrefixes.includes(stationPrefix); calculatedIsOnSelectedLine = isNorthTerminalMatch || isSouthTerminalMatch || isPrefixMatch; }
+                  const isStationOnSelectedLine = calculatedIsOnSelectedLine;
+              
 
-                  const isStartStation = station.stationName === startStation;
-                  const isStopStation = station.stationName === stopStation;
+                  const isCurrentlyStartStation = station.stationName === startStation;
+                  const isCurrentlyStopStation = station.stationName === stopStation;
+
+                  const markerPaneName = (isCurrentlyStartStation || isCurrentlyStopStation || isStationOnSelectedLine)
+                       ? "activeStationMarkersPane"
+                       : "inactiveStationMarkersPane";
 
                   let fillColor, strokeColor, opacity, radius, interactive;
         
-                  if (isStartStation) {
-                      // Start station styling
-                      fillColor = '#FFFFFF';
-                      strokeColor = '#000000';
-                      opacity = 1;
-                      radius = 8;
-                      interactive = true;
-                  } else if (isStopStation) {
+                  if (isCurrentlyStopStation) {
                       // Stop station styling
                       fillColor = '#FFFFFF';
                       strokeColor = '#000000';
                       opacity = 1;
-                      radius = 8;
+                      radius = 7;
                       interactive = true;
-                  } else if (isOnSelectedLine) {
+                  } else if (isStationOnSelectedLine) {
                       // Station on selected line styling
                       fillColor = '#80276C'; // Purple
                       strokeColor = '#80276C';
-                      opacity = 0.9;
-                      radius = 6;
+                      opacity = 1;
+                      radius = 7;
                       interactive = true;
                   } else if (selectedLineId) {
                       // Inactive stations styling (when a line is selected)
-                      fillColor = '#E8D5E4';
-                      strokeColor = '#E8D5E4';
-                      opacity = 0.3; // Much lower opacity
-                      radius = 4; // Smaller radius
+                      fillColor = '#DAB1DA';
+                      strokeColor = '#DAB1DA';
+                      opacity = 1;
+                      radius = 2;
                       interactive = false; // Not interactive
                   } else {
                       // Default styling when no line is selected
-                      fillColor = '#7B388C'; // Default purple
-                      strokeColor = '#7B388C';
-                      opacity = 0.7;
-                      radius = 5;
+                      fillColor = '#DAB1DA'; // Default purple
+                      strokeColor = '#DAB1DA';
+                      opacity = 1;
+                      radius = 3;
                       interactive = true;
                   }
                   
@@ -435,14 +448,14 @@ const TripPlannerPage = () => {
                     <CircleMarker
                       key={station._id}
                       center={[station.latitude, station.longitude]}
-                      radius={6}
+                      radius={radius}
                       pathOptions={{ 
+                        pane: markerPaneName,
                         fillColor: fillColor, 
                         color: strokeColor, 
                         fillOpacity: opacity,
-                        opacity: opacity * 0.8 // Slightly lower opacity for the border
+                        opacity: opacity,
                       }}
-                      pane="tooltipPane"
                       eventHandlers={{
                         click: (e) => {
                             // Prevent click events for inactive stations
@@ -491,7 +504,7 @@ const TripPlannerPage = () => {
       <Link to="/tripSummaryPage">
         <button
           className="bg-gray-700 hover:bg-gray-900 text-white font-bold py-2 px-8 rounded text-xl"
-          disabled={!isStationSelected}
+          disabled={!isStopStationSelected}
         >
           Next
         </button>
