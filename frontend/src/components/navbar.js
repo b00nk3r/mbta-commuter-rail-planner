@@ -12,7 +12,7 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); 
+    localStorage.removeItem('accessToken'); 
     setUser(null);
     window.location.href = "/login"; 
   };
