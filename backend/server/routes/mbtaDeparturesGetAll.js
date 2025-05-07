@@ -12,11 +12,12 @@ const mbtaApi = {
         return { 'x-api-key': config.apiKey };
     },
 
-    async getDepartures(origin) {
+    async getDepartures(origin, line) {
         try {
             const response = await axios.get(`${config.baseUrl}/schedules`, {
                 params: {
                     'filter[stop]': origin,
+                    'filter[route]': line,
                     'filter[route_type]': 2, // Commuter rail
                     'sort': 'departure_time' // Ensure results are ordered
                 },
@@ -32,7 +33,8 @@ const mbtaApi = {
             // Extract departure times
             return departuresData.map(schedule => ({
                 departure_time: schedule.attributes.departure_time,
-                train_number: schedule.relationships.trip.data.id
+                train_number: schedule.relationships.trip.data.id,
+                route_id: schedule.relationships.route.data.id
             }));
         } catch (err) {
             console.error(`Error fetching departures: ${err.message}`);
@@ -43,9 +45,16 @@ const mbtaApi = {
 
 router.get('/getAll', async (req, res) => {
     try {
+        const {origin, line} = req.query;
+
+        if (!origin || !line) {
+            return res.status(400).json({ message: "Missing origin parameter." });
+        }
+
         const response = await axios.get(`${config.baseUrl}/schedules`, {
             params: {
-                'filter[stop]': 'place-north',
+                'filter[stop]': origin,
+                'filter[route]': line,
                 'filter[route_type]': 2,
                 'sort': 'departure_time'
             },
@@ -54,7 +63,8 @@ router.get('/getAll', async (req, res) => {
 
         const departures = response.data?.data.map(schedule => ({
             departure_time: schedule.attributes.departure_time,
-            train_number: schedule.relationships.trip.data.id
+            train_number: schedule.relationships.trip.data.id,
+            route_id: schedule.relationships.route.data.id
         }));
 
         return res.json(departures);

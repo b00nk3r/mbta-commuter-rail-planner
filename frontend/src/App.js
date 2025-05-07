@@ -25,6 +25,7 @@ export const UserContext = createContext();
 //test again
 const App = () => {
   const [user, setUser] = useState();
+  const [departures, setDepartures] = useState([]);
 
   useEffect(() => {
     setUser(getUserInfo());
@@ -32,6 +33,8 @@ const App = () => {
 
   return (
     <>
+  
+
       <Navbar />
       <UserContext.Provider value={user}>
         <Routes>
@@ -42,9 +45,9 @@ const App = () => {
           <Route path="/privateUserProfile" element={<PrivateUserProfile />} />
           <Route exact path = "/mbtaAlerts" element ={<MbtaAlertsPage />} />
           <Route exact path = "/mbtaLines" element ={<MbtaLinesPage />} />
-          <Route exact path = "/tripPlannerPage" element ={<TripPlannerPage />} />
+          <Route exact path = "/tripPlannerPage" element ={<TripPlannerPage setDepartures={setDepartures}/>} />
           <Route exact path = "/mapPage" element ={<MapPage/>} />
-          <Route exact path = "/tripSummaryPage" element ={<TripSummaryPage />} />
+          <Route exact path = "/tripSummaryPage" element ={<TripSummaryPage departures={departures}/>} />
 
 
 
