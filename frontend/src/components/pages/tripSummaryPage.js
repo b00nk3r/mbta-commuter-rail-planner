@@ -27,7 +27,14 @@ function getLastSegment(trainNumber) {
 }
 
 function TripSummaryPage({ departures }) {
-    const firstDepartureDate = departures.length > 0 ? formatDepartureDate(departures[0].departure_time) : "No departures available"
+
+    const filteredDepartures = departures.filter(departure => 
+        departure.departure_time && 
+        !isNaN(new Date(departure.departure_time).getTime())
+    );
+
+    const firstDepartureDate = filteredDepartures.length > 0 ? formatDepartureDate(filteredDepartures[0].departure_time) : "No departures available";
+
     return (
         <div className="flex flex-col items-center mt-6">
             <h2 className="text-2xl font-bold mb-4">{firstDepartureDate}</h2> {/* Display formatted date */}
@@ -39,8 +46,8 @@ function TripSummaryPage({ departures }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {departures.length > 0 ? (
-                        departures.map((departure, index) => (
+                    {filteredDepartures.length > 0 ? (
+                        filteredDepartures.map((departure, index) => (
                             <tr key={index} className="text-center">
                                 <td className="border border-gray-300 px-4 py-2">{getLastSegment(departure.train_number)}</td>
                                 <td className="border border-gray-300 px-4 py-2">{formatDepartureTime(departure.departure_time)}</td>
