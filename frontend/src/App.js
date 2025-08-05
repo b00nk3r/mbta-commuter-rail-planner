@@ -1,6 +1,6 @@
 import React from "react";
 // We use Route in order to define the different routes of our application
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import './css/card.css';
 import './index.css';
 
@@ -26,16 +26,18 @@ export const UserContext = createContext();
 const App = () => {
   const [user, setUser] = useState();
   const [departures, setDepartures] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
     setUser(getUserInfo());
   }, []);
 
+  // Hide navbar on landing page
+  const shouldShowNavbar = location.pathname !== '/';
+
   return (
     <>
-  
-
-      <Navbar />
+      {shouldShowNavbar && <Navbar />}
       <UserContext.Provider value={user}>
         <Routes>
           <Route exact path="/" element={<LandingPage />} />
