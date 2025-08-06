@@ -285,269 +285,272 @@ const TripPlannerPage = ({ setDepartures }) => {
 
 
   return (
-    <div className="flex flex-col h-screen">
-      <header className="bg-white shadow-md py-4">
-        <div className="container mx-auto">
-          <h1 className="text-4xl font-bold text-center text-gray-800">Trip Planner</h1>
-        </div>
-      </header>
+    <div className="relative h-screen">
+        {/* Floating Control Panel */}
+        <div className="absolute top-1/3 left-6 transform -translate-y-1/2 z-[700] w-72 sm:w-80 rounded-2xl bg-white/90 backdrop-blur shadow-lg">
+            <div className="p-6">
+                {/* Header with Train Icon and Title */}
+                <div className="flex items-center gap-3 mb-6">
+                    {/* Train Icon Placeholder */}
+                    <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
+                        <svg 
+                            className="w-5 h-5 text-white" 
+                            fill="currentColor" 
+                            viewBox="0 0 20 20"
+                        >
+                            <path d="M10 2a2 2 0 00-2 2v1H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2V4a2 2 0 00-2-2zM8 7h4v10H8V7z"/>
+                        </svg>
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-800">Trip Planner</h1>
+                </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel */}
-        <div className="w-96 bg-gray-100 p-6 overflow-y-auto shadow-lg">
+                {/* LINE Section */}
+                <div className="mb-4">
+                    <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                        LINE
+                    </label>
+                    <div className="relative">
+                        <select
+                            value={selectedLine}
+                            onChange={handleLineSelection}
+                            className="w-full p-3 border border-gray-300 rounded-lg text-base appearance-none bg-white"
+                        >
+                            <option value="">Select a Commuter Rail Line</option>
+                            {sortedLines.map(line => (
+                                <option key={line._id} value={line.lineName}>
+                                    {line.lineName}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                            </svg>
+                        </div>
+                    </div>
+                    {!selectedLine && (
+                        <p className="text-red-600 mt-1 text-sm">
+                            Please select a line first
+                        </p>
+                    )}
+                </div>
 
-          {/* Select Line */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2 text-gray-700">Line</h2>
-            <div className="relative">
-              <select
-                value={selectedLine}
-                onChange={handleLineSelection}
-                className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
-              >
-                <option value="">Select a Commuter Rail Line</option>
-                {sortedLines.map(line => (
-                  <option key={line._id} value={line.lineName}>
-                    {line.lineName}
-                  </option>
-                ))}
+                {/* START STATION Section */}
+                <div className="mb-4">
+                    <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                        START STATION
+                    </label>
+                    <div className="w-full p-3 border border-gray-200 bg-gray-100 rounded-lg text-base text-gray-700 min-h-[48px]">
+                        {startStation ? startStation : (selectedLine ? 'Determining...' : 'Select line above')}
+                    </div>
+                </div>
 
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                </svg>
-              </div>
-            </div>
-            {!selectedLine && (
-              <p className="text-red-700 mt-2 text-lg">
-                Please select a line first
-              </p>
-            )}
-          </div>
+                {/* DESTINATION Section */}
+                <div className="mb-6">
+                    <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                        DESTINATION
+                    </label>
+                    <div className="relative">
+                        <select
+                            value={stopStation}
+                            onChange={handleStopSelection}
+                            className="w-full p-3 border border-gray-300 rounded-lg text-base appearance-none bg-white"
+                            disabled={!selectedLine || !startStation || sortedStationsForStop.length === 0}
+                        >
+                            <option value="">
+                                {startStation ? 'Select a destination' : 'Select line first'}
+                            </option>
+                            {sortedStationsForStop.map(station => (
+                                <option key={station._id} value={station.stationName}>
+                                    {station.stationName}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                            </svg>
+                        </div>
+                    </div>
+                    {selectedLine && startStation && !isStopStationSelected && (
+                        <p className="text-red-600 mt-1 text-sm">
+                            Please select a stop station.
+                        </p>
+                    )}
+                </div>
 
-          {/* Display Start Station (Replaces Start Dropdown) */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2 text-gray-700">Start Station</h2>
-            <div className="w-full p-3 border border-gray-200 bg-gray-200 rounded text-lg text-gray-600 min-h-[50px]">
-              {startStation ? startStation : (selectedLine ? 'Determining...' : 'Select line above')}
-            </div>
-          </div>
-
-          {/* Select Stop */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2 text-gray-700">Destination</h2>
-            <div className="relative">
-              <select
-                value={stopStation}
-                onChange={handleStopSelection}
-                className="w-full p-3 border border-gray-300 rounded text-lg appearance-none"
-                disabled={!selectedLine || !startStation || sortedStationsForStop.length === 0}
-              >
-                <option value="">
-                  {startStation ? 'Select a destination' : 'Select line first'}
-                </option>
-                {sortedStationsForStop.map(station => (
-                  <option key={station._id} value={station.stationName}>
-                    {station.stationName}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                </svg>
-              </div>
-            </div>
-
-            {selectedLine && startStation && !isStopStationSelected && (
-              <p className="text-red-700 mt-2 text-lg">
-                Please select a stop station.
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Right Panel - Map and Station Info */}
-        <div className="flex-1 flex flex-col relative">
-
-          {/* Map Section */}
-          <div className="flex-1 relative">
-            <MapContainer
-              center={[42.360082, -71.058880]} // Boston coordinates
-              zoom={13}
-              minZoom={9}  // 🔽 Set minimum zoom level
-              maxZoom={11}  // 🔼 Set maximum zoom level
-              maxBounds={massachusettsBounds}
-              maxBoundsViscosity={1.0}
-              style={{ height: "100%", width: "100%" }}
-            >
-
-
-              <Pane name="unselectedLinesPane" style={{ zIndex: 440 }} />
-              <Pane name="inactiveStationMarkersPane" style={{ zIndex: 450 }} />
-              <Pane name="selectedLinePane" style={{ zIndex: 500 }} />
-              <Pane name="activeStationMarkersPane" style={{ zIndex: 600 }} />
-
-              <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CartoDB</a>'
-              />
-
-
-              {/* Render polylines for routes */}
-              {routeLines
-                .filter(route => route._id && route._id.startsWith('canonical-'))
-                .map(route => {
-                  const decodedCoordinates = decodePolyline(route.polyline);
-                  return (
-                    <Polyline
-                      key={`${route._id}-unselected`} // Ensure unique key
-                      positions={decodedCoordinates}
-                      pane="unselectedLinesPane"
-                      pathOptions={{
-                        color: '#DAB1DA', // Color for unselected lines
-                        weight: 2.5,      // Weight for unselected lines
-                        opacity: 1,     // Opacity for unselected lines
-                        interactive: false
-                      }}
-                    />
-                  );
-                })}
-
-              {routeLines
-                .filter(route => route._id && route._id.startsWith('canonical-') && isRouteOnSelectedLine(route))
-                .map(route => {
-                  const decodedCoordinates = decodePolyline(route.polyline);
-                  return (
-                    <Polyline
-                      key={`${route._id}-selected`} // Ensure unique key
-                      positions={decodedCoordinates}
-                      pane="selectedLinePane"
-                      pathOptions={{
-                        color: '#80276C', // Color for selected line
-                        weight: 5,        // Weight for selected line
-                        opacity: 1,     // Opacity for selected line
-                        interactive: false
-                      }}
-                    />
-                  );
-                })}
-
-              {stations.map(station => {
-                if (station.latitude != null && station.longitude != null) {
-                  let calculatedIsOnSelectedLine = false;
-                  if (selectedLineId && station._id) { const stationIdLower = station._id.toLowerCase(); const isNorthTerminalMatch = stationIdLower.includes("north") && TERMINALS["north"].includes(selectedLineId); const isSouthTerminalMatch = stationIdLower.includes("sstat") && TERMINALS["sstat"].includes(selectedLineId); const stationPrefix = getStationPrefix(station._id); const validPrefixes = LINE_TO_PREFIX_MAP[selectedLineId] || []; const isPrefixMatch = validPrefixes.includes(stationPrefix); calculatedIsOnSelectedLine = isNorthTerminalMatch || isSouthTerminalMatch || isPrefixMatch; }
-                  const isStationOnSelectedLine = calculatedIsOnSelectedLine;
-
-
-                  const isCurrentlyStartStation = station.stationName === startStation;
-                  const isCurrentlyStopStation = station.stationName === stopStation;
-
-                  const markerPaneName = (isCurrentlyStartStation || isCurrentlyStopStation || isStationOnSelectedLine)
-                    ? "activeStationMarkersPane"
-                    : "inactiveStationMarkersPane";
-
-                  let fillColor, strokeColor, opacity, radius, interactive;
-
-                  if (isCurrentlyStopStation) {
-                    // Stop station styling
-                    fillColor = '#FFFFFF';
-                    strokeColor = '#000000';
-                    opacity = 1;
-                    radius = 7;
-                    interactive = true;
-                  } else if (isStationOnSelectedLine) {
-                    // Station on selected line styling
-                    fillColor = '#80276C'; // Purple
-                    strokeColor = '#80276C';
-                    opacity = 1;
-                    radius = 7;
-                    interactive = true;
-                  } else if (selectedLineId) {
-                    // Inactive stations styling (when a line is selected)
-                    fillColor = '#DAB1DA';
-                    strokeColor = '#DAB1DA';
-                    opacity = 1;
-                    radius = 2;
-                    interactive = false; // Not interactive
-                  } else {
-                    // Default styling when no line is selected
-                    fillColor = '#DAB1DA'; // Default purple
-                    strokeColor = '#DAB1DA';
-                    opacity = 1;
-                    radius = 3;
-                    interactive = true;
-                  }
-
-                  return (
-                    <CircleMarker
-                      key={station._id}
-                      center={[station.latitude, station.longitude]}
-                      radius={radius}
-                      pathOptions={{
-                        pane: markerPaneName,
-                        fillColor: fillColor,
-                        color: strokeColor,
-                        fillOpacity: opacity,
-                        opacity: opacity,
-                      }}
-                      eventHandlers={{
-                        click: (e) => {
-                          // Prevent click events for inactive stations
-                          if (!interactive) {
-                            e.originalEvent.stopPropagation();
-                            e.originalEvent.preventDefault();
-                          }
-                        }
-                      }}
+                {/* Plan Trip Button */}
+                <Link to="/tripSummaryPage">
+                    <button
+                        className="w-full bg-gray-700 hover:bg-gray-900 text-white font-bold py-3 px-4 rounded-lg text-lg transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        disabled={!isStopStationSelected}
                     >
-                      {interactive && (
-                        <Popup>
-                          <div style={{ width: '200px' }}>
-                            <h3 className="font-bold text-lg mb-1">{station.stationName}</h3>
-                            {/* Add this image block */}
-                            {station.imageUrl && (
-                              <img
-                                src={station.imageUrl}
-                                alt={station.stationName}
-                                style={{
-                                  width: '100%',
-                                  height: 'auto',
-                                  marginBottom: '0.5rem',
-                                  borderRadius: '6px',
-                                  objectFit: 'cover',
-                                }}
-                              />
-                            )}
-                          </div>
-                        </Popup>
-                      )}
-                    </CircleMarker>
-                  );
-                } else {
-                  return null;
-                }
-              })}
-
-            </MapContainer>
-          </div>
+                        Plan Trip
+                    </button>
+                </Link>
+            </div>
         </div>
-      </div>
 
-      {/* Bottom Navigation */}
-      <div className="bg-gray-200 p-4 flex justify-end">
-        <Link to="/tripSummaryPage">
-          <button
-            className="bg-gray-700 hover:bg-gray-900 text-white font-bold py-2 px-8 rounded text-xl"
-            disabled={!isStopStationSelected}
-          >
-            Next
-          </button>
-        </Link>
-      </div>
+        {/* Full Screen Map */}
+        <div className="h-full w-full">
+            <MapContainer
+                center={[42.360082, -71.058880]}
+                zoom={13}
+                minZoom={9}
+                maxZoom={11}
+                maxBounds={massachusettsBounds}
+                maxBoundsViscosity={1.0}
+                style={{ height: "100%", width: "100%" }}
+            >
+                <Pane name="unselectedLinesPane" style={{ zIndex: 440 }} />
+                <Pane name="inactiveStationMarkersPane" style={{ zIndex: 450 }} />
+                <Pane name="selectedLinePane" style={{ zIndex: 500 }} />
+                <Pane name="activeStationMarkersPane" style={{ zIndex: 600 }} />
+
+                <TileLayer
+                    url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CartoDB</a>'
+                />
+
+                {/* Render polylines for routes */}
+                {routeLines
+                    .filter(route => route._id && route._id.startsWith('canonical-'))
+                    .map(route => {
+                        const decodedCoordinates = decodePolyline(route.polyline);
+                        return (
+                            <Polyline
+                                key={`${route._id}-unselected`}
+                                positions={decodedCoordinates}
+                                pane="unselectedLinesPane"
+                                pathOptions={{
+                                    color: '#DAB1DA',
+                                    weight: 2.5,
+                                    opacity: 1,
+                                    interactive: false
+                                }}
+                            />
+                        );
+                    })}
+
+                {routeLines
+                    .filter(route => route._id && route._id.startsWith('canonical-') && isRouteOnSelectedLine(route))
+                    .map(route => {
+                        const decodedCoordinates = decodePolyline(route.polyline);
+                        return (
+                            <Polyline
+                                key={`${route._id}-selected`}
+                                positions={decodedCoordinates}
+                                pane="selectedLinePane"
+                                pathOptions={{
+                                    color: '#80276C',
+                                    weight: 5,
+                                    opacity: 1,
+                                    interactive: false
+                                }}
+                            />
+                        );
+                    })}
+
+                {stations.map(station => {
+                    if (station.latitude != null && station.longitude != null) {
+                        let calculatedIsOnSelectedLine = false;
+                        if (selectedLineId && station._id) {
+                            const stationIdLower = station._id.toLowerCase();
+                            const isNorthTerminalMatch = stationIdLower.includes("north") && TERMINALS["north"].includes(selectedLineId);
+                            const isSouthTerminalMatch = stationIdLower.includes("sstat") && TERMINALS["sstat"].includes(selectedLineId);
+                            const stationPrefix = getStationPrefix(station._id);
+                            const validPrefixes = LINE_TO_PREFIX_MAP[selectedLineId] || [];
+                            const isPrefixMatch = validPrefixes.includes(stationPrefix);
+                            calculatedIsOnSelectedLine = isNorthTerminalMatch || isSouthTerminalMatch || isPrefixMatch;
+                        }
+                        const isStationOnSelectedLine = calculatedIsOnSelectedLine;
+
+                        const isCurrentlyStartStation = station.stationName === startStation;
+                        const isCurrentlyStopStation = station.stationName === stopStation;
+
+                        const markerPaneName = (isCurrentlyStartStation || isCurrentlyStopStation || isStationOnSelectedLine)
+                            ? "activeStationMarkersPane"
+                            : "inactiveStationMarkersPane";
+
+                        let fillColor, strokeColor, opacity, radius, interactive;
+
+                        if (isCurrentlyStopStation) {
+                            fillColor = '#FFFFFF';
+                            strokeColor = '#000000';
+                            opacity = 1;
+                            radius = 7;
+                            interactive = true;
+                        } else if (isStationOnSelectedLine) {
+                            fillColor = '#80276C';
+                            strokeColor = '#80276C';
+                            opacity = 1;
+                            radius = 7;
+                            interactive = true;
+                        } else if (selectedLineId) {
+                            fillColor = '#DAB1DA';
+                            strokeColor = '#DAB1DA';
+                            opacity = 1;
+                            radius = 2;
+                            interactive = false;
+                        } else {
+                            fillColor = '#DAB1DA';
+                            strokeColor = '#DAB1DA';
+                            opacity = 1;
+                            radius = 3;
+                            interactive = true;
+                        }
+
+                        return (
+                            <CircleMarker
+                                key={station._id}
+                                center={[station.latitude, station.longitude]}
+                                radius={radius}
+                                pathOptions={{
+                                    pane: markerPaneName,
+                                    fillColor: fillColor,
+                                    color: strokeColor,
+                                    fillOpacity: opacity,
+                                    opacity: opacity,
+                                }}
+                                eventHandlers={{
+                                    click: (e) => {
+                                        if (!interactive) {
+                                            e.originalEvent.stopPropagation();
+                                            e.originalEvent.preventDefault();
+                                        }
+                                    }
+                                }}
+                            >
+                                {interactive && (
+                                    <Popup>
+                                        <div style={{ width: '200px' }}>
+                                            <h3 className="font-bold text-lg mb-1">{station.stationName}</h3>
+                                            {station.imageUrl && (
+                                                <img
+                                                    src={station.imageUrl}
+                                                    alt={station.stationName}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: 'auto',
+                                                        marginBottom: '0.5rem',
+                                                        borderRadius: '6px',
+                                                        objectFit: 'cover',
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    </Popup>
+                                )}
+                            </CircleMarker>
+                        );
+                    } else {
+                        return null;
+                    }
+                })}
+            </MapContainer>
+        </div>
     </div>
-  );
+);
 };
 
 export default TripPlannerPage;
