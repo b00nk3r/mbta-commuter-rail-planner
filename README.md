@@ -1,31 +1,68 @@
-# mern-user-skeleton
-This MERN stack implementation creates a small web application that lets users register, login, view a home page, and logout. 
+### MBTA Commuter Rail Planner
+Full‑stack app for exploring MBTA commuter rail lines, viewing alerts, and planning trips.
 
-Configuration
--------------
-Under users/server/create .env file that looks similar to this:
-DB_URL = mongodb+srv://admin:<your admin password>@cluster<some  number>.<some unique id>.mongodb.net/<some database name>
-ACCESS_TOKEN_SECRET = xb3tim8rnIdoMMJfGNaqMxHX6zyWGBrR
-To do this, you need to create an MongoDB Atlas account, a collection, and a database.
+### Tech
+- **Backend**: Node.js, Express, MongoDB/Mongoose, JWT, Zod
+- **Frontend**: React (CRA), React Router, React‑Bootstrap, Leaflet
 
-The DB_URL comes from signing up for an MongoDB Atlas account and creating a cluster.  Under database select the cluster (likely
-cluster0 if it is your first one) and select Connect. Select connect your application, driver=Node.js.  You will see
-the database connection string in this window.
+### Monorepo layout
+```
+mbta-commuter-rail-planner/
+  backend/
+    src/
+      config/
+      models/
+      routes/
+        mbta/
+        stations/
+        users/
+      utilities/
+      server.js
+    requests.http
+  frontend/
+    src/
+      components/
+      pages/
+      pages/
+      utils/
+      styles/
+      assets/images/
+```
 
-Generate a unique JWT access token for ACCESS_TOKEN_SECRET
+### Quick start
+1) Install deps
+```
+cd backend && npm install
+cd ../frontend && npm install
+```
 
-Start Up
----------
-  Start the back end by going to users/server and executing npm start.
-  Start the front end by going to ui and executing npm start.
-  
-Front End
----------
-  The Front End runs on port 8096 which is specified in ui/.env
-  The land page is at http://localhost:8096/
-  
-Back End
---------
-  The back end runs on port 8081.
-  This is specified in user/server/server.js
-  The back provides access to user information through a RESTful API.
+2) Configure env files (copy from templates)
+- Create `backend/.env` from `backend/.env.example`
+- Create `frontend/.env` from `frontend/.env.example`
+
+3) Run locally (two terminals)
+```
+# Terminal 1 (backend)
+cd backend
+npm run server
+
+# Terminal 2 (frontend)
+cd frontend
+npm start
+```
+- Backend: `http://localhost:8081`
+- Frontend: `http://localhost:3000`
+
+### Environment variables
+- **backend/.env**
+  - `DB_URL=` MongoDB connection string
+  - `ACCESS_TOKEN_SECRET=` secret used to sign JWTs
+  - `MBTA_API_KEY=` MBTA API key
+- **frontend/.env**
+  - `REACT_APP_BACKEND_SERVER_URI=` e.g. `http://localhost:8081`
+
+Keep real `.env` files out of git. Commit only `.env.example` templates.
+
+### Helpful
+- REST examples: `backend/requests.http` (VS Code Rest Client compatible)
+- Trip planner lives in `frontend/src/pages/` files: `tripPlannerPage.js`, `tripPlannerControlPanel.js`, `tripPlannerMap.js`, `tripPlannerHelpers.js`
