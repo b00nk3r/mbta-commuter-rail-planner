@@ -9,7 +9,7 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.2.1",
     "bootstrap": "^5.2.2",
-    "data": "^0.6.1",
+    "data": "^1.0.0",
     "i": "^0.3.7",
     "jwt-decode": "^3.1.2",
     "leaflet": "^1.9.4",
