@@ -1,0 +1,21 @@
+# Dependencies
+frontend/node_modules/
+backend/node_modules/
+
+# Build outputs
+frontend/build/
+frontend/dist/
+
+# Package lock files
+package-lock.json
+
+# Environment files
+.env*
+
+# Coverage reports
+coverage/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
