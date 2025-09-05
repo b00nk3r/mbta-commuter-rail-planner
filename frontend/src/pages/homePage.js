@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import getUserInfo from '../utils/decodeJwt';
 
 const HomePage = () => {
     const [user, setUser] = useState({});
-    const navigate = useNavigate();
-
-    const handleClick = (e) => {
-        e.preventDefault();
-        localStorage.removeItem('accessToken');
-        return navigate('/');
-    };
 
     useEffect(() => {
         setUser(getUserInfo());

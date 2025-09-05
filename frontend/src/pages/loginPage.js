@@ -53,7 +53,6 @@ const Login = () => {
     try {
       const { data: res } = await axios.post(url, data);
       const { accessToken } = res;
-      //store token in localStorage
       localStorage.setItem("accessToken", accessToken);
       navigate("/home");
     } catch (error) {
@@ -111,14 +110,14 @@ const Login = () => {
                     </span>
                   </Form.Text>
                 </Form.Group>
-                <div class="form-check form-switch">
+                <div className="form-check form-switch">
                   <input
-                    class="form-check-input"
+                    className="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
                     onChange={() => { setLight(!light) }}
                   />
-                  <label class="form-check-label" for="flexSwitchCheckDefault" className='text-muted'>
+                  <label className="form-check-label text-muted" htmlFor="flexSwitchCheckDefault">
                     {bgText}
                   </label>
                 </div>
