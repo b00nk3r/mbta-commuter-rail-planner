@@ -20,6 +20,7 @@ function Alerts(){
         <div>
             {alerts.map(alert => (
                 <Card
+                    key={alert.id}
                     body
                     outline
                     color="success"
@@ -46,4 +47,3 @@ function Alerts(){
 }
 
 export default Alerts;
-

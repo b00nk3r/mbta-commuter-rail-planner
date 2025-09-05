@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 const TripPlannerControlPanel = ({
   selectedLine,
-  selectedLineId,
   lines,
   startStation,
   stopStation,
@@ -28,9 +27,9 @@ const TripPlannerControlPanel = ({
         </div>
 
         <div className="mb-4">
-          <label className="tp-label">LINE</label>
+          <label className="tp-label" htmlFor="line-select">LINE</label>
           <div className="relative">
-            <select value={selectedLine} onChange={onLineChange} className="tp-select">
+            <select id="line-select" value={selectedLine} onChange={onLineChange} className="tp-select">
               <option value="">Select a Line</option>
               {sortedLines.map((line) => (
                 <option key={line._id} value={line.lineName}>{line.lineName}</option>
@@ -44,16 +43,16 @@ const TripPlannerControlPanel = ({
         </div>
 
         <div className="mb-4">
-          <label className="tp-label">START STATION</label>
+          <div className="tp-label">START STATION</div>
           <div className="tp-value">
             {startStation ? startStation : (selectedLine ? 'Determining...' : 'Select a line above')}
           </div>
         </div>
 
         <div className="mb-10">
-          <label className="tp-label">DESTINATION</label>
+          <label className="tp-label" htmlFor="stop-select">DESTINATION</label>
           <div className="relative">
-            <select value={stopStation} onChange={onStopChange} className="tp-select" disabled={!selectedLine || !startStation || sortedStationsForStop.length === 0}>
+            <select id="stop-select" value={stopStation} onChange={onStopChange} className="tp-select" disabled={!selectedLine || !startStation || sortedStationsForStop.length === 0}>
               <option value="">{startStation ? 'Select a destination' : 'Select line first'}</option>
               {sortedStationsForStop.map(station => (
                 <option key={station._id} value={station.stationName}>{station.stationName}</option>
@@ -77,5 +76,3 @@ const TripPlannerControlPanel = ({
 };
 
 export default TripPlannerControlPanel;
-
-

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import L from 'leaflet';
-import { useNavigate } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -46,7 +45,6 @@ const TripPlannerPage = ({ setDepartures }) => {
   const massachusettsBounds = [[41.237964, -73.508142], [43.222, -69.928393]];
   const [routeLines, setRouteLines] = useState([]);
   const [stationsForStopDropdown, setStationsForStopDropdown] = useState([]);
-  const navigate = useNavigate();
   const stationMap = { "North Station": "place-north", "South Station": "place-sstat" };
 
   useEffect(() => {
@@ -163,5 +161,3 @@ const TripPlannerPage = ({ setDepartures }) => {
 };
 
 export default TripPlannerPage;
-
-

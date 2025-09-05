@@ -44,9 +44,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { response: res } = await axios.post(url, data);
-      const {accessToken} = res;
-
+      await axios.post(url, data);
       navigate("/login");
     } catch (error) {
       if (
@@ -102,9 +100,9 @@ const Register = () => {
                     onChange={handleChange}
                   />
                 </Form.Group>
-                <div class="form-check form-switch">
+                <div className="form-check form-switch">
                   <input
-                    class="form-check-input"
+                    className="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
                     onChange={() => {
@@ -112,9 +110,8 @@ const Register = () => {
                     }}
                   />
                   <label
-                    class="form-check-label"
-                    for="flexSwitchCheckDefault"
-                    className="text-muted"
+                    className="form-check-label text-muted"
+                    htmlFor="flexSwitchCheckDefault"
                   >
                     {bgText}
                   </label>

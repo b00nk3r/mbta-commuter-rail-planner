@@ -15,14 +15,14 @@
     "leaflet": "^1.9.4",
     "moment": "^2.29.4",
     "postcss": "^8.5.6",
-    "react": "^19.1.1",
+    "react": "^18.2.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^18.2.0",
-    "react-leaflet": "^5.0.0",
+    "react-leaflet": "^4.2.1",
     "react-router-dom": "^7.8.2",
     "react-scripts": "^5.0.1",
     "table": "^6.9.0",
-    "tailwindcss": "^4.1.13",
+    "tailwindcss": "^3.4.0",
     "web-vitals": "^5.1.0"
   },
   "scripts": {
@@ -36,6 +36,7 @@
     "format:check": "prettier --check src/"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.32.0",
