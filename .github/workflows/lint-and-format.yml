@@ -1,0 +1,58 @@
+name: Lint and Format Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          frontend/package-lock.json
+          backend/package-lock.json
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm ci
+
+    - name: Run ESLint on frontend
+      run: |
+        cd frontend
+        npm run lint -- --max-warnings=0
+
+    - name: Run ESLint on backend
+      run: |
+        cd backend
+        npm run lint -- --max-warnings=0
+
+    - name: Check Prettier formatting on frontend
+      run: |
+        cd frontend
+        npm run format:check
+
+    - name: Check Prettier formatting on backend
+      run: |
+        cd backend
+        npm run format:check
+
+    - name: Check Prettier formatting on root files
+      run: |
+        npx prettier --check "*.{js,json,md,yml,yaml}" ".github/**/*.{yml,yaml,md}"
