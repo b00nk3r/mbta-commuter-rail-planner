@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useState, useEffect } from "react";
 // We use Route in order to define the different routes of our application
 import { Route, Routes, useLocation } from "react-router-dom";
 import './styles/card.css';
@@ -15,7 +15,6 @@ import HomePage from "./pages/homePage";
 import Login from "./pages/loginPage";
 import Signup from "./pages/registerPage";
 import PrivateUserProfile from "./pages/privateUserProfilePage";
-import { createContext, useState, useEffect } from "react";
 import getUserInfo from "./utils/decodeJwt";
 import MapPage from "./pages/mapPage";
 import TripSummaryPage  from "./pages/tripSummaryPage";
