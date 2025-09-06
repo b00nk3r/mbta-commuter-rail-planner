@@ -39,7 +39,7 @@ const EditUserPage = () =>{
   // handle form field changes
   const handleChange = ({ currentTarget: input }) => {
     setValues({ ...form, [input.id]: input.value });
-    if ( !!errors[input] ) setErrors({
+    if ( errors[input] ) setErrors({
       ...errors,
       [input]: null
     })
