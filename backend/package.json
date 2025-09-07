@@ -29,7 +29,7 @@
     "i": "^0.3.7",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^6.18.0",
-    "mongoose": "^6.6.5",
+    "mongoose": "^8.18.0",
     "polyline-encoded": "^0.0.9",
     "zod": "^3.19.1"
   },
