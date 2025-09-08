@@ -1,10 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const newStationModel = require('../../models/stationModel')
+const stationController = require('../../controllers/stationController');
 
-router.get('/getAll', async (req, res) => {
-    const station = await newStationModel.find();
-    return res.json(station)
-  })
+router.get('/getAll', stationController.getAll);
 
-  module.exports = router;
+module.exports = router;

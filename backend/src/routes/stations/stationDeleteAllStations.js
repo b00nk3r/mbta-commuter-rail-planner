@@ -1,11 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const newStationModel = require('../../models/stationModel');
-const mongoose = require('mongoose');
+const stationController = require('../../controllers/stationController');
 
-router.post('/deleteAll', async (req, res) => {
-    const stations = await newStationModel.deleteMany();
-    return res.json(stations);
-});
+router.post('/deleteAll', stationController.deleteAll);
 
-  module.exports = router;
+module.exports = router;
