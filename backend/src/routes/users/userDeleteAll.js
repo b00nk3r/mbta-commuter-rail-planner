@@ -1,10 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const newUserModel = require('../../models/userModel')
+const userController = require('../../controllers/userController');
 
-router.post('/deleteAll', async (req, res) => {
-    const user = await newUserModel.deleteMany();
-    return res.json(user)
-  })
+router.post('/deleteAll', userController.deleteAll);
 
-  module.exports = router;
+module.exports = router;
