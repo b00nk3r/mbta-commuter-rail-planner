@@ -56,12 +56,12 @@ body:
       placeholder: |
         - [ ] Task 1
         - [ ] Task 2
-    value: |
-        - [ ] Maintain existing behavior (no functional changes)
-        - [ ] Update or add tests
-        - [ ] Run linters and static analysis
-        - [ ] Update documentation if structure changes
-        - [ ] Verify performance is not degraded
+      value: |
+          - [ ] Maintain existing behavior (no functional changes)
+          - [ ] Update or add tests
+          - [ ] Run linters and static analysis
+          - [ ] Update documentation if structure changes
+          - [ ] Verify performance is not degraded
     validations:
       required: true
   - type: textarea
