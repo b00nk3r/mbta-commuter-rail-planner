@@ -1,12 +1,25 @@
 ## Description
-Please include a summary of the change and which issue it fixes.
+Brief description of changes.
+
+## Issues Closed
+- Closes #123
+<!-- If multiple, list them: Closes #123, Closes #456 -->
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Refactoring
+- [ ] Testing
+- [ ] Documentation
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] Manual testing completed
 
 ## Checklist
-- [ ] Tests added/updated
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] Comments added where necessary
 - [ ] Documentation updated
-- [ ] Lint & build pass locally
-
-## Related Issue
-Closes #<issue_number>
-
-## Screenshots (if UI-related)
+- [ ] No breaking changes

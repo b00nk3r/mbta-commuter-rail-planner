@@ -1,0 +1,67 @@
+name: Testing
+description: Add or improve tests
+title: "[Test]: "
+labels: ["testing"]
+assignees: []
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: What tests are being added or improved?
+    validations:
+      required: true
+  - type: dropdown
+    id: test_type
+    attributes:
+      label: Test Type
+      options:
+        - Unit
+        - Integration
+        - End-to-End
+        - Performance
+        - Security
+        - Smoke
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Modules/features covered.
+  - type: textarea
+    id: environments
+    attributes:
+      label: Environments
+      description: Runtime/OS/browsers/DBs where tests run.
+  - type: input
+    id: coverage_goal
+    attributes:
+      label: Coverage Goal
+      placeholder: "e.g., lines 80% → 85%"
+  - type: textarea
+    id: data_setup
+    attributes:
+      label: Data / Fixtures
+      description: Test data, seeds, or mocks required.
+  - type: checkboxes
+    id: tasks
+    attributes:
+      label: Tasks
+      options:
+        - label: Write/Update tests
+        - label: Run locally and ensure green
+        - label: Integrate into CI
+        - label: Address flaky cases
+        - label: Update test documentation
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      placeholder: |
+        - [ ] Target coverage achieved
+        - [ ] All CI test jobs pass
+        - [ ] Tests are reliable/reproducible locally
+        - [ ] Documented how to run and troubleshoot
+    validations:
+      required: true
