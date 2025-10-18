@@ -47,16 +47,23 @@ body:
     attributes:
       label: Rollback Plan
       description: How to revert safely if issues arise.
-  - type: checkboxes
+  - type: textarea
     id: tasks
     attributes:
       label: Tasks
-      options:
-        - label: Maintain existing behavior (no functional changes)
-        - label: Update or add tests
-        - label: Run linters and static analysis
-        - label: Update documentation if structure changes
-        - label: Verify performance is not degraded
+      description: Add an editable checklist of work items.
+      render: markdown
+      placeholder: |
+        - [ ] Task 1
+        - [ ] Task 2
+    value: |
+        - [ ] Maintain existing behavior (no functional changes)
+        - [ ] Update or add tests
+        - [ ] Run linters and static analysis
+        - [ ] Update documentation if structure changes
+        - [ ] Verify performance is not degraded
+    validations:
+      required: true
   - type: textarea
     id: acceptance_criteria
     attributes:
