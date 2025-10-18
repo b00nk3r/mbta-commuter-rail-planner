@@ -1,0 +1,70 @@
+name: Refactoring
+description: Improve code structure without changing behavior
+title: "[Refactor]: "
+labels: ["refactor"]
+assignees: []
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Brief description of the refactor.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why refactor? Tech debt, readability, performance, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: areas
+    attributes:
+      label: Affected Areas
+      description: Files/modules/packages impacted.
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk Level
+      options:
+        - Low
+        - Medium
+        - High
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Approach
+      description: Outline of the refactor plan.
+  - type: textarea
+    id: performance
+    attributes:
+      label: Performance Considerations
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Rollback Plan
+      description: How to revert safely if issues arise.
+  - type: checkboxes
+    id: tasks
+    attributes:
+      label: Tasks
+      options:
+        - label: Maintain existing behavior (no functional changes)
+        - label: Update or add tests
+        - label: Run linters and static analysis
+        - label: Update documentation if structure changes
+        - label: Verify performance is not degraded
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      placeholder: |
+        - [ ] Behavior unchanged (before/after checks)
+        - [ ] All tests pass in CI; coverage stable or improved
+        - [ ] No performance regression > X%
+        - [ ] Code reviewed and approved
+    validations:
+      required: true

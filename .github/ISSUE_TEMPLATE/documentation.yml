@@ -1,0 +1,75 @@
+name: Documentation
+description: Create or update documentation
+title: "[Docs]: "
+labels: ["documentation"]
+assignees: []
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Brief description of the doc change.
+    validations:
+      required: true
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Audience
+      options:
+        - End users
+        - Developers
+        - Operators / DevOps
+        - Contributors
+    validations:
+      required: true
+  - type: dropdown
+    id: location
+    attributes:
+      label: Location
+      options:
+        - README
+        - docs/ site
+        - Code comments
+        - API reference
+        - ADR (Architecture Decision Record)
+    validations:
+      required: true
+  - type: input
+    id: affected_pages
+    attributes:
+      label: Affected Pages / Paths
+      placeholder: "docs/trip-planner.md, README sections"
+  - type: textarea
+    id: outline
+    attributes:
+      label: Content Outline
+      description: Headings and key points to cover.
+    validations:
+      required: true
+  - type: textarea
+    id: assets
+    attributes:
+      label: Assets
+      description: Links to screenshots, diagrams, or examples.
+  - type: checkboxes
+    id: tasks
+    attributes:
+      label: Tasks
+      options:
+        - label: Draft content
+        - label: Add examples/code snippets
+        - label: Update diagrams/screenshots
+        - label: Add cross-references/links
+        - label: Request docs review
+        - label: Publish/deploy docs
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      placeholder: |
+        - [ ] Clear and accurate content
+        - [ ] Consistent style and formatting
+        - [ ] All links valid; navigation updated
+        - [ ] Reviewed and approved
+    validations:
+      required: true

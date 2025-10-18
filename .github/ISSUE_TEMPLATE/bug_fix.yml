@@ -1,0 +1,85 @@
+name: Bug fix
+description: Report and track a defect
+title: "[Bug]: "
+labels: ["bug"]
+assignees: []
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Brief description of the bug.
+      placeholder: Crash when clicking Save on Trip Planner page
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser/app version, device.
+      placeholder: "macOS 15, Chrome 128, Node 20"
+  - type: input
+    id: version
+    attributes:
+      label: Affected version/commit
+      placeholder: "v1.2.3 or 1a2b3c4"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Go to …
+        2. Click …
+        3. Observe …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Screenshots
+      description: Paste relevant logs or attach screenshots.
+  - type: checkboxes
+    id: tasks
+    attributes:
+      label: Tasks
+      options:
+        - label: Reproduce and confirm the bug
+        - label: Create failing test
+        - label: Implement fix
+        - label: Update or add tests
+        - label: Update documentation if needed
+        - label: Verify fix in CI and staging
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Conditions that must be satisfied to close the issue.
+      placeholder: |
+        - [ ] Given … When … Then …
+        - [ ] No regressions in related features
+        - [ ] All tests pass in CI
+    validations:
+      required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
