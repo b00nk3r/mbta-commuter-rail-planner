@@ -1,0 +1,79 @@
+name: New feature
+description: Propose and plan a new capability
+title: "[Feature]: "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Brief description of the feature.
+      placeholder: Allow users to save favorite stations
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+      description: What problem does this solve? Why now?
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: High-level approach and user impact.
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: Frontend
+        - label: Backend
+        - label: API
+        - label: Database
+        - label: CI/CD
+        - label: Documentation
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / Blockers
+  - type: textarea
+    id: designs
+    attributes:
+      label: Design / Mockups
+      description: Link to designs or attach screenshots.
+  - type: checkboxes
+    id: tasks
+    attributes:
+      label: Tasks
+      options:
+        - label: Define API/contracts
+        - label: Implement backend
+        - label: Implement frontend
+        - label: Write tests
+        - label: Add documentation
+        - label: Update CI pipelines
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Conditions that must be satisfied to close the issue.
+      placeholder: |
+        - [ ] Given … When … Then …
+        - [ ] Feature is behind a flag if needed
+        - [ ] Telemetry/metrics in place
+        - [ ] Tests and docs updated
+    validations:
+      required: true
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Success Metrics
+      description: How will we measure success? (adoption, latency, etc.)
+  - type: textarea
+    id: rollout
+    attributes:
+      label: Rollout Plan
+      description: Launch steps and communication plan.
