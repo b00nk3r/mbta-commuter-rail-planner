@@ -1,5 +1,5 @@
 const app = require('./app');
-const dbConnection = require('./config/db.config');
+const dbConnection = require('./config/database');
 
 require('dotenv').config();
 const SERVER_PORT = 8081;
