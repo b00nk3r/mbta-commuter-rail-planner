@@ -4,11 +4,13 @@ const stationSchema = new mongoose.Schema({
   mbtaId: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      trim: true
   },
   name: {
       type: String,
-      required: true
+      required: true,
+      trim: true
   },
   lines: [{
       type: mongoose.Schema.Types.ObjectId,
@@ -17,11 +19,13 @@ const stationSchema = new mongoose.Schema({
   coordinates: {
     latitude: {
       type: Number,
+      required: true,
       min: [-90, 'Latitude must be between -90 and 90'],
       max: [90, 'Latitude must be between -90 and 90']
     },
     longitude: {
         type: Number,
+        required: true,
         min: [-180, 'Longitude must be between -180 and 180'],
         max: [180, 'Longitude must be between -180 and 180']
     }
@@ -31,12 +35,22 @@ const stationSchema = new mongoose.Schema({
       enum: ['terminal', 'station'],
       default: 'station'
   },
-  imageUrl: String,
+  imageUrl: {
+    type: String,
+    trim: true
+  },
   facilities: [String],
-  address: String,
-  municipality: String
+  address: {
+    type: String,
+    trim: true
+  },
+  mmunicipality: {
+    type: String,
+    trim: true
+  }
 });
 
+stationSchema.index({ mbtaId: 1 }, { unique: true });
 stationSchema.index({ coordinates: '2dsphere' });
 stationSchema.index({ name: 'text' });
 

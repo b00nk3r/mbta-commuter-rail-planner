@@ -29,7 +29,8 @@ const stationImageSchema = new mongoose.Schema(
 
     altText: {
       type: String,
-      trim: true
+      trim: true,
+      maxlength: 255
     },
 
     isPrimary: {
@@ -42,9 +43,7 @@ const stationImageSchema = new mongoose.Schema(
       default: 0
     }
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
 stationImageSchema.index(
